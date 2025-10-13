@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Disallow: /admin/*
+
+# Host
+Host: https://alegria.pages.dev
+
+# Sitemaps
+Sitemap: https://alegria.pages.dev/sitemap.xml
+Sitemap: https://alegria.pages.dev/pages-sitemap.xml
+Sitemap: https://alegria.pages.dev/posts-sitemap.xml

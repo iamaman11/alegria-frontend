@@ -1,0 +1,8 @@
+name = "alegria-frontend"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".open-next"
+
+[vars]
+ENVIRONMENT = "production"
+API_URL = "https://alegria-api.workers.dev"
