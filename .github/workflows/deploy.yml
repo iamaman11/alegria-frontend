@@ -35,6 +35,36 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
+      - name: Prepare .open-next for Pages deployment
+        run: |
+          cd .open-next
+          # Copy static assets to root for Cloudflare Pages
+          cp -r assets/* .
+          # Rename worker.js to _worker.js (required for Pages)
+          mv worker.js _worker.js
+          # Create _routes.json for static asset routing
+          cat > _routes.json << 'EOF'
+          {
+            "version": 1,
+            "description": "Static assets should bypass Worker",
+            "include": ["/*"],
+            "exclude": [
+              "/_next/static/*",
+              "/favicon.ico",
+              "/favicon.svg",
+              "/robots.txt",
+              "/sitemap.xml",
+              "/pages-sitemap.xml",
+              "/posts-sitemap.xml",
+              "/file.svg",
+              "/globe.svg",
+              "/next.svg",
+              "/vercel.svg",
+              "/window.svg"
+            ]
+          }
+          EOF
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
