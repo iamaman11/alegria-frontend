@@ -62,15 +62,25 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 }
 
 export async function generateStaticParams() {
-  // Get first page to determine total pages
-  const firstPage = await getAllPosts(1, 12)
-  const totalPages = firstPage.totalPages
+  try {
+    // Get first page to determine total pages
+    const firstPage = await getAllPosts(1, 12)
+    const totalPages = firstPage.totalPages
 
-  const pages: { pageNumber: string }[] = []
+    const pages: { pageNumber: string }[] = []
 
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push({ pageNumber: String(i) })
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push({ pageNumber: String(i) })
+    }
+
+    return pages
+  } catch (error) {
+    // Enable On-Demand ISR: generate pages dynamically when first requested
+    // This prevents build failures when API is unavailable during build time
+    console.warn('[ISR] generateStaticParams failed, using on-demand mode:', error instanceof Error ? error.message : String(error))
+
+    // Return empty array - pages will be generated when users request them
+    // Subsequent requests will use ISR cache (revalidate: 300)
+    return []
   }
-
-  return pages
 }
