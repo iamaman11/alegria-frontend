@@ -5,4 +5,4 @@ pages_build_output_dir = ".open-next"
 
 [vars]
 ENVIRONMENT = "production"
-API_URL = "https://alegria-api.workers.dev"
+API_URL = "https://alegria-api.majakojh.workers.dev"
