@@ -276,38 +276,13 @@ export default function PageView({
     async function fetchPage() {
       try {
         // Validate and construct API URL with fallbacks
-        // Note: process.env is NOT available at runtime in client components
-        // Only works at build time for NEXT_PUBLIC_* vars
+        // IMPORTANT: Always use the subdomain-based API URL, never the current origin
+        // Current origin (poshta.cloud) routes through Pages which doesn't have /api/*
         const getApiUrl = (): string => {
-          // Primary: use hardcoded production API URL
-          const productionUrl = 'https://api.poshta.cloud'
-          if (isValidUrl(productionUrl)) {
-            return productionUrl
-          }
-
-          // Fallback 1: try to detect if we're on poshta.cloud
-          if (typeof window !== 'undefined') {
-            const currentOrigin = window.location.origin
-            // Only use current origin if it's api.poshta.cloud or a valid API endpoint
-            if (currentOrigin.includes('api.poshta.cloud') || currentOrigin.includes('alegria')) {
-              if (isValidUrl(currentOrigin)) {
-                return currentOrigin
-              }
-            }
-          }
-
-          // Fallback 2: use default Workers API
+          // Always use the subdomain-based API endpoint
+          // This ensures requests go to api.poshta.cloud (via Workers)
+          // and bypass the Cloudflare Pages routing
           return 'https://api.poshta.cloud'
-        }
-
-        const isValidUrl = (url: string): boolean => {
-          if (!url) return false
-          try {
-            new URL(url)
-            return true
-          } catch {
-            return false
-          }
         }
 
         const apiUrl = getApiUrl()
