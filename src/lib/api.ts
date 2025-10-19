@@ -217,10 +217,37 @@ export async function getPostsByCategory(
 }
 
 export async function getAllPostSlugs(): Promise<string[]> {
-  const response = await fetchAPI<PaginatedResponse<Post>>(
-    '/api/posts?limit=1000&depth=0'
-  );
-  return response.docs.map(post => post.slug);
+  const allSlugs: string[] = [];
+  let hasMore = true;
+  let page = 1;
+  const maxPages = 100; // Safety limit to prevent infinite loops
+
+  while (hasMore && page <= maxPages) {
+    try {
+      const response = await fetchAPI<PaginatedResponse<Post>>(
+        `/api/posts?page=${page}&limit=100&depth=0`
+      );
+
+      allSlugs.push(...response.docs.map(p => p.slug));
+      hasMore = response.hasNextPage ?? false;
+      page++;
+
+      // Log progress for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[getAllPostSlugs] Fetched page ${page - 1}: ${response.docs.length} posts, total: ${allSlugs.length}`);
+      }
+    } catch (error) {
+      console.warn(
+        `[getAllPostSlugs] Failed to fetch page ${page}:`,
+        error instanceof Error ? error.message : String(error)
+      );
+      // Break on error to avoid infinite loops, but keep accumulated slugs
+      break;
+    }
+  }
+
+  console.log(`[getAllPostSlugs] Successfully fetched ${allSlugs.length} total posts`);
+  return allSlugs;
 }
 
 // ============================================
@@ -254,10 +281,37 @@ export async function getPageBySlug(
 }
 
 export async function getAllPageSlugs(): Promise<string[]> {
-  const response = await fetchAPI<PaginatedResponse<Page>>(
-    '/api/pages?limit=100&depth=0'
-  );
-  return response.docs.map(page => page.slug);
+  const allSlugs: string[] = [];
+  let hasMore = true;
+  let page = 1;
+  const maxPages = 100; // Safety limit to prevent infinite loops
+
+  while (hasMore && page <= maxPages) {
+    try {
+      const response = await fetchAPI<PaginatedResponse<Page>>(
+        `/api/pages?page=${page}&limit=100&depth=0`
+      );
+
+      allSlugs.push(...response.docs.map(p => p.slug));
+      hasMore = response.hasNextPage ?? false;
+      page++;
+
+      // Log progress for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[getAllPageSlugs] Fetched page ${page - 1}: ${response.docs.length} pages, total: ${allSlugs.length}`);
+      }
+    } catch (error) {
+      console.warn(
+        `[getAllPageSlugs] Failed to fetch page ${page}:`,
+        error instanceof Error ? error.message : String(error)
+      );
+      // Break on error to avoid infinite loops, but keep accumulated slugs
+      break;
+    }
+  }
+
+  console.log(`[getAllPageSlugs] Successfully fetched ${allSlugs.length} total pages`);
+  return allSlugs;
 }
 
 // ============================================
