@@ -1,7 +1,5 @@
-'use client'
-
 import React from 'react'
-import { useEffect, useState } from 'react'
+import { Metadata } from 'next'
 import styles from './page.module.css'
 
 interface Block {
