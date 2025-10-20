@@ -1,6 +1,10 @@
 name = "alegria-frontend"
 pages_build_output_dir = ".open-next"
 
+# Node.js compatibility for Cloudflare Pages
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
 [vars]
 # Environment identification
 ENVIRONMENT = "production"
