@@ -19,6 +19,7 @@ import PageClient from './page.client'
 export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 
 // Allow dynamic params for posts not in generateStaticParams
+// Without force-static: Server-renders on demand, then caches for revalidate period
 export const dynamicParams = true
 
 export async function generateStaticParams() {
@@ -75,9 +76,18 @@ export default async function Post({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = '' } = await paramsPromise
-  const post = await queryPostBySlug({ slug, draft: false })
 
-  return generateMeta({ doc: post })
+  try {
+    const post = await queryPostBySlug({ slug, draft: false })
+    return generateMeta({ doc: post })
+  } catch (error) {
+    console.error(`[generateMetadata] Failed to fetch metadata for post "${slug}":`, error)
+    // Return default metadata for on-demand generated posts
+    return {
+      title: slug || 'Post',
+      description: `Post: ${slug}`,
+    }
+  }
 }
 
 const queryPostBySlug = cache(async ({ slug, draft }: { slug: string; draft: boolean }) => {

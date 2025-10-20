@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { PayloadRedirects } from '@/components/PayloadRedirects'
-import { getPageBySlug, getAllPageSlugs, type Page } from '@/lib/api'
+import { getPageBySlug, type Page } from '@/lib/api'
 import React, { cache } from 'react'
 import { homeStatic } from '@/endpoints/seed/home-static'
 
@@ -11,21 +11,15 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
 // ISR Configuration: 7-day fallback + webhook-based on-demand invalidation
-// Strategy: Hybrid ISR approach
-// - Primary: Webhook-based cache invalidation (on-demand)
-// - Fallback: 7-day automatic revalidation (safety net)
-// - Result: Instant updates with guaranteed recovery
-// This reduces API load by 288x while maintaining reliability
-export const revalidate = 604800 // 7 days fallback (verified safe TTL)
+export const revalidate = 604800 // 7 days fallback
 
-// SOLUTION: Force static with dynamicParams for ISR on-demand generation
-export const dynamic = 'force-static'
+// Enable dynamic params for on-demand ISR generation
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  // Return empty array for pure on-demand ISR
-  // With force-static, this creates the route handler
-  return []
+  // Return at least one route to ensure dynamic handler is created
+  // All other pages will be generated on first request and cached
+  return [{ slug: 'home' }]
 }
 
 type Args = {
@@ -36,7 +30,7 @@ type Args = {
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { slug = 'home' } = await paramsPromise
-  const url = '/' + slug
+  const url = '/pages/' + slug
 
   let page: Page | null
   let fetchError: string | null = null
@@ -80,12 +74,21 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({
-    slug,
-    draft: false,
-  })
 
-  return generateMeta({ doc: page })
+  try {
+    const page = await queryPageBySlug({
+      slug,
+      draft: false,
+    })
+    return generateMeta({ doc: page })
+  } catch (error) {
+    console.error(`[generateMetadata] Failed to fetch metadata for "${slug}":`, error)
+    // Return default metadata for on-demand generated pages
+    return {
+      title: slug === 'home' ? 'Home' : slug,
+      description: `Page: ${slug}`,
+    }
+  }
 }
 
 const queryPageBySlug = cache(async ({ slug, draft }: { slug: string; draft: boolean }) => {
