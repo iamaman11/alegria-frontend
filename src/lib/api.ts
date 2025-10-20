@@ -271,16 +271,27 @@ export async function getPageBySlug(
 ): Promise<Page | null> {
   try {
     const draftParam = draft ? '&draft=true' : '';
-    const page = await fetchAPI<Page>(
-      `/api/pages/${slug}?depth=2${draftParam}`,
-      options
-    );
-    console.log(`[getPageBySlug] Successfully fetched page "${slug}":`, page?.title || 'N/A');
+    const endpoint = `/api/pages/${slug}?depth=2${draftParam}`;
+
+    console.log(`[getPageBySlug] Attempting to fetch from: ${API_URL}${endpoint}`);
+    console.log(`[getPageBySlug] Environment: ${typeof window === 'undefined' ? 'server' : 'browser'}`);
+
+    const page = await fetchAPI<Page>(endpoint, options);
+
+    console.log(`[getPageBySlug] SUCCESS: Fetched page "${slug}":`, page?.title || 'N/A');
     return page;
   } catch (error) {
-    console.error(`[getPageBySlug] Failed to fetch page "${slug}":`,
-      error instanceof Error ? error.message : String(error)
-    );
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorType = error instanceof Error ? error.constructor.name : typeof error;
+
+    console.error(`[getPageBySlug] FAILED to fetch page "${slug}"`);
+    console.error(`[getPageBySlug] Error Type: ${errorType}`);
+    console.error(`[getPageBySlug] Error Message: ${errorMsg}`);
+
+    if (error instanceof Error && error.stack) {
+      console.error(`[getPageBySlug] Stack: ${error.stack.split('\n').slice(0, 3).join(' | ')}`);
+    }
+
     return null;
   }
 }
