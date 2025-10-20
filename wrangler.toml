@@ -4,5 +4,13 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
 
 [vars]
+# Environment identification
 ENVIRONMENT = "production"
+
+# API Configuration - MUST be NEXT_PUBLIC for client-side access
+# These are injected during build and runtime
+NEXT_PUBLIC_API_URL = "https://api.poshta.cloud"
+NEXT_PUBLIC_SITE_URL = "https://poshta.cloud"
+
+# Legacy API_URL for backward compatibility (if needed)
 API_URL = "https://api.poshta.cloud"

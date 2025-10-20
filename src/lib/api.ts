@@ -143,24 +143,33 @@ export interface PaginatedResponse<T> {
 
 async function fetchAPI<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retryCount = 0
 ): Promise<T> {
   const url = `${API_URL}${endpoint}`;
+  const maxRetries = 3;
+  const baseDelay = 500; // ms
 
   try {
+    // Explicit timeout for edge runtime
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds
+
     const response = await fetch(url, {
       ...options,
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'Alegria-Frontend/1.0 (ISR)',
         ...options.headers,
       },
       // For ISR: enable Next.js caching with appropriate revalidation
-      // Different endpoints can have different cache times
-      // Workers API provides additional caching layer
       next: options.next || {
         revalidate: 300, // Default 5 minutes, can be overridden per endpoint
       },
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
@@ -168,7 +177,24 @@ async function fetchAPI<T>(
 
     return response.json();
   } catch (error) {
-    console.error(`[API Error] ${endpoint}:`, error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const isRetryable =
+      errorMsg.includes('fetch') ||
+      errorMsg.includes('timeout') ||
+      errorMsg.includes('ECONNREFUSED') ||
+      errorMsg.includes('ENOTFOUND');
+
+    // Retry logic for transient errors
+    if (isRetryable && retryCount < maxRetries) {
+      const delay = baseDelay * Math.pow(2, retryCount); // exponential backoff
+      console.warn(
+        `[API] Retry attempt ${retryCount + 1}/${maxRetries} after ${delay}ms: ${endpoint}`
+      );
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return fetchAPI<T>(endpoint, options, retryCount + 1);
+    }
+
+    console.error(`[API Error] ${endpoint} (retries exhausted):`, errorMsg);
     throw error;
   }
 }

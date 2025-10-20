@@ -22,26 +22,39 @@ export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  // Critical pages that must be pre-generated at build time
+  // These ensure basic site functionality even if API is down
+  const criticalSlugs = ['newone']
+
   try {
     console.log('[generateStaticParams] Starting to fetch all page slugs...')
     const slugs = await getAllPageSlugs()
     console.log(`[generateStaticParams] Fetched ${slugs.length} slugs: ${slugs.join(', ')}`)
 
-    const filtered = slugs
+    // Merge API slugs with critical pages to ensure they're included
+    const mergedSlugs = Array.from(new Set([...criticalSlugs, ...slugs]))
+
+    const filtered = mergedSlugs
       .filter((slug) => slug !== 'home')
       .map((slug) => ({
         slug,
       }))
 
-    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages`)
+    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages (includes ${criticalSlugs.length} critical)`)
     return filtered
   } catch (error) {
-    // If API is not available during build, return empty array
-    // Pages will be generated on-demand with ISR + dynamicParams=true
+    // If API is not available during build, fall back to critical pages only
+    // This ensures core functionality works even during API outages
     const errorMsg = error instanceof Error ? error.message : String(error)
     console.error(`[generateStaticParams] FAILED to fetch pages: ${errorMsg}`)
-    console.warn('[generateStaticParams] Falling back to on-demand generation (dynamicParams=true)')
-    return []
+    console.warn(`[generateStaticParams] Falling back to critical pages only: ${criticalSlugs.join(', ')}`)
+
+    // Return at least the critical pages
+    return criticalSlugs
+      .filter((slug) => slug !== 'home')
+      .map((slug) => ({
+        slug,
+      }))
   }
 }
 
@@ -56,18 +69,28 @@ export default async function Page({ params: paramsPromise }: Args) {
   const url = '/' + slug
 
   let page: Page | null
+  let fetchError: string | null = null
 
-  page = await queryPageBySlug({
-    slug,
-    draft: false,
-  })
+  try {
+    page = await queryPageBySlug({
+      slug,
+      draft: false,
+    })
+  } catch (error) {
+    fetchError = error instanceof Error ? error.message : String(error)
+    console.error(`[Page] Failed to fetch page "${slug}": ${fetchError}`)
+    page = null
+  }
 
-  // Remove this code once your website is seeded
+  // Graceful fallback for home page
   if (!page && slug === 'home') {
+    console.log('[Page] Using fallback homeStatic for home page')
     page = homeStatic as Page
   }
 
+  // Additional fallback logging for debugging
   if (!page) {
+    console.warn(`[Page] Page "${slug}" not found after fetch (error: ${fetchError || 'unknown'})`)
     return <PayloadRedirects url={url} />
   }
 
