@@ -22,29 +22,37 @@ export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 export const dynamicParams = true
 
 export async function generateStaticParams() {
+  // Critical pages that MUST be pre-generated even if API fails
+  const criticalPages = ['newone']
+
   try {
     console.log('[generateStaticParams] Starting to fetch all page slugs...')
     const slugs = await getAllPageSlugs()
     console.log(`[generateStaticParams] Fetched ${slugs.length} slugs: ${slugs.join(', ')}`)
 
-    const filtered = slugs
+    // Merge critical pages with API slugs (remove duplicates)
+    const allSlugs = Array.from(new Set([...criticalPages, ...slugs]))
+
+    const filtered = allSlugs
       .filter((slug) => slug !== 'home')
       .map((slug) => ({
         slug,
       }))
 
-    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages`)
+    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages (including ${criticalPages.length} critical)`)
     return filtered
   } catch (error) {
-    // If API is not available during build, return empty array
-    // dynamicParams=true allows on-demand generation for pages not in this list
-    // This ensures pages can be fetched dynamically even if API fails during build
+    // If API is not available during build, at least pre-generate critical pages
     const errorMsg = error instanceof Error ? error.message : String(error)
     console.error(`[generateStaticParams] FAILED to fetch pages: ${errorMsg}`)
-    console.warn(`[generateStaticParams] Will rely on on-demand generation (dynamicParams=true)`)
+    console.warn(`[generateStaticParams] Falling back to critical pages only: ${criticalPages.join(', ')}`)
 
-    // Return empty array - dynamicParams=true will allow dynamic rendering
-    return []
+    // Return critical pages to ensure they're pre-generated
+    return criticalPages
+      .filter((slug) => slug !== 'home')
+      .map((slug) => ({
+        slug,
+      }))
   }
 }
 
