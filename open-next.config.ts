@@ -1,5 +1,4 @@
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
-import doQueue from "@opennextjs/cloudflare/overrides/queue/do-queue";
 import kvIncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/kv-incremental-cache";
 
 export default defineCloudflareConfig({
@@ -11,7 +10,6 @@ export default defineCloudflareConfig({
   // KV has Tiered Cache for global cache hits
   incrementalCache: kvIncrementalCache,
 
-  // Use Durable Objects queue for ISR revalidation
-  // Handles background revalidation after cache expiry
-  queue: doQueue,
+  // NOTE: Durable Objects queue removed for Cloudflare Pages
+  // DO queue is not needed on Pages - middleware handles routing
 });
