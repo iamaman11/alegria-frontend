@@ -56,7 +56,7 @@ export default async function SearchPage({ searchParams: searchParamsPromise }: 
               name="q"
               defaultValue={query}
               placeholder="Search posts and pages..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               required
             />
             <button
