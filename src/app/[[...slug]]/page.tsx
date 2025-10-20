@@ -22,21 +22,20 @@ export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  // ВАЖНО: Возвращаем пустой массив для pure on-demand ISR
-  // Все страницы будут генерироваться при первом запросе
-  console.log('[generateStaticParams] Returning empty array for pure on-demand ISR')
-  console.log('[generateStaticParams] All pages will be generated on first request')
+  // Catch-all route: return empty for on-demand generation
+  console.log('[generateStaticParams] Catch-all route with on-demand generation')
   return []
 }
 
 type Args = {
   params: Promise<{
-    slug?: string
+    slug?: string[]
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const { slug = 'home' } = await paramsPromise
+  const params = await paramsPromise
+  const slug = params.slug ? params.slug[0] : 'home'
   const url = '/' + slug
 
   let page: Page | null
@@ -80,7 +79,8 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
+  const params = await paramsPromise
+  const slug = params.slug ? params.slug[0] : 'home'
   const page = await queryPageBySlug({
     slug,
     draft: false,
