@@ -269,29 +269,50 @@ export async function getPageBySlug(
   draft: boolean = false,
   options?: RequestInit
 ): Promise<Page | null> {
+  const startTime = Date.now();
   try {
     const draftParam = draft ? '&draft=true' : '';
     const endpoint = `/api/pages/${slug}?depth=2${draftParam}`;
+    const fullUrl = `${API_URL}${endpoint}`;
 
-    console.log(`[getPageBySlug] Attempting to fetch from: ${API_URL}${endpoint}`);
+    console.log(`[getPageBySlug] ========== START ==========`);
+    console.log(`[getPageBySlug] Slug: ${slug}`);
+    console.log(`[getPageBySlug] Full URL: ${fullUrl}`);
     console.log(`[getPageBySlug] Environment: ${typeof window === 'undefined' ? 'server' : 'browser'}`);
+    console.log(`[getPageBySlug] API_URL: ${API_URL}`);
 
     const page = await fetchAPI<Page>(endpoint, options);
 
-    console.log(`[getPageBySlug] SUCCESS: Fetched page "${slug}":`, page?.title || 'N/A');
+    const duration = Date.now() - startTime;
+    console.log(`[getPageBySlug] SUCCESS in ${duration}ms: "${slug}" -> "${page?.title || 'N/A'}"`);
+    console.log(`[getPageBySlug] ========== END ==========`);
     return page;
   } catch (error) {
+    const duration = Date.now() - startTime;
     const errorMsg = error instanceof Error ? error.message : String(error);
     const errorType = error instanceof Error ? error.constructor.name : typeof error;
+    const isNetworkError = errorMsg.includes('fetch') || errorMsg.includes('network');
+    const isCorsError = errorMsg.includes('CORS') || errorMsg.includes('cors');
+    const isTimeoutError = errorMsg.includes('timeout') || errorMsg.includes('Timeout');
 
-    console.error(`[getPageBySlug] FAILED to fetch page "${slug}"`);
+    console.error(`[getPageBySlug] ========== FAILURE ==========`);
+    console.error(`[getPageBySlug] Slug: ${slug}`);
+    console.error(`[getPageBySlug] Duration: ${duration}ms`);
     console.error(`[getPageBySlug] Error Type: ${errorType}`);
     console.error(`[getPageBySlug] Error Message: ${errorMsg}`);
+    console.error(`[getPageBySlug] Is Network Error: ${isNetworkError}`);
+    console.error(`[getPageBySlug] Is CORS Error: ${isCorsError}`);
+    console.error(`[getPageBySlug] Is Timeout Error: ${isTimeoutError}`);
 
     if (error instanceof Error && error.stack) {
-      console.error(`[getPageBySlug] Stack: ${error.stack.split('\n').slice(0, 3).join(' | ')}`);
+      const stackLines = error.stack.split('\n').slice(0, 5);
+      console.error(`[getPageBySlug] Stack Trace:`);
+      stackLines.forEach((line, i) => {
+        console.error(`[getPageBySlug]   ${i}: ${line.trim()}`);
+      });
     }
 
+    console.error(`[getPageBySlug] ========== END (FAILED) ==========`);
     return null;
   }
 }
