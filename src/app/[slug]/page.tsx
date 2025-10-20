@@ -18,24 +18,24 @@ import PageClient from './page.client'
 // This reduces API load by 288x while maintaining reliability
 export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 
-// Allow dynamic params for pages not in generateStaticParams
+// SOLUTION: Force static with dynamicParams for ISR on-demand generation
+export const dynamic = 'force-static'
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  // Catch-all route: return empty for on-demand generation
-  console.log('[generateStaticParams] Catch-all route with on-demand generation')
+  // Return empty array for pure on-demand ISR
+  // With force-static, this creates the route handler
   return []
 }
 
 type Args = {
   params: Promise<{
-    slug?: string[]
+    slug?: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
-  const params = await paramsPromise
-  const slug = params.slug ? params.slug[0] : 'home'
+  const { slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
   let page: Page | null
@@ -79,8 +79,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const params = await paramsPromise
-  const slug = params.slug ? params.slug[0] : 'home'
+  const { slug = 'home' } = await paramsPromise
   const page = await queryPageBySlug({
     slug,
     draft: false,
