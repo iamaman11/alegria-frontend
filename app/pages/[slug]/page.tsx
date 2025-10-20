@@ -54,9 +54,11 @@ async function getPage(slug: string): Promise<Page | null> {
   try {
     // Use lib/api with depth=2 to get full data including blocks and media
     // Don't override revalidate here - use the global export revalidate (604800 with webhook invalidation)
-    return await getPageBySlug(slug, false)
+    const result = await getPageBySlug(slug, false)
+    console.log(`[PageView] getPageBySlug("${slug}") returned:`, result ? `Page: ${result.title}` : 'null')
+    return result
   } catch (err) {
-    console.error('[PageView] Error fetching page:', err)
+    console.error(`[PageView] Error fetching page "${slug}":`, err)
     return null
   }
 }
