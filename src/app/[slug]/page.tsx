@@ -23,17 +23,24 @@ export const dynamicParams = true
 
 export async function generateStaticParams() {
   try {
+    console.log('[generateStaticParams] Starting to fetch all page slugs...')
     const slugs = await getAllPageSlugs()
+    console.log(`[generateStaticParams] Fetched ${slugs.length} slugs: ${slugs.join(', ')}`)
 
-    return slugs
+    const filtered = slugs
       .filter((slug) => slug !== 'home')
       .map((slug) => ({
         slug,
       }))
+
+    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages`)
+    return filtered
   } catch (error) {
     // If API is not available during build, return empty array
-    // Pages will be generated on-demand with ISR
-    console.warn('[generateStaticParams] Failed to fetch pages:', error)
+    // Pages will be generated on-demand with ISR + dynamicParams=true
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error(`[generateStaticParams] FAILED to fetch pages: ${errorMsg}`)
+    console.warn('[generateStaticParams] Falling back to on-demand generation (dynamicParams=true)')
     return []
   }
 }
