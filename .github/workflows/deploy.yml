@@ -33,7 +33,7 @@ jobs:
       - name: Build with OpenNext
         run: npm run build:worker
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud' }}
 
       - name: Prepare .open-next for Pages deployment
         run: |
