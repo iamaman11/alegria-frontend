@@ -10,13 +10,8 @@ import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
-// ISR Configuration: 7-day fallback + webhook-based on-demand invalidation
-// Strategy: Hybrid ISR approach for blog posts
-// - Primary: Webhook-based cache invalidation (on-demand)
-// - Fallback: 7-day automatic revalidation (safety net)
-// - Result: Instant updates with guaranteed recovery
-// This reduces API load by 288x while maintaining reliability
-export const revalidate = 604800 // 7 days fallback (verified safe TTL)
+// ISR: 10 minutes revalidation for posts (per deployment guide)
+export const revalidate = 600
 
 // Allow dynamic params for posts not in generateStaticParams
 // Without force-static: Server-renders on demand, then caches for revalidate period
@@ -30,10 +25,11 @@ export async function generateStaticParams() {
       slug,
     }))
   } catch (error) {
-    // If API is not available during build, return empty array
-    // Posts will be generated on-demand with ISR
-    console.warn('[generateStaticParams] Failed to fetch posts:', error)
-    return []
+    // If API is not available during build, return fallback slug
+    // This ensures dynamic routes compile even if API is down
+    // On Cloudflare Pages, we MUST return at least one param for route to compile
+    console.warn('[generateStaticParams] Failed to fetch posts, using fallback:', error)
+    return [{ slug: 'fallback' }]
   }
 }
 

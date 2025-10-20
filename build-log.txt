@@ -1,0 +1,154 @@
+
+> frontend@0.1.0 build
+> cross-env NODE_OPTIONS=--no-deprecation next build
+
+   ▲ Next.js 15.2.3
+   - Environments: .env.local, .env.production, .env
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+Deprecation Warning on line 0, column 8 of file:///C:/Users/Bose/code/alegria-by/frontend/node_modules/@payloadcms/ui/dist/icons/Copy/index.scss:0:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+0 | @import '../../scss/styles';
+
+node_modules\@payloadcms\ui\dist\icons\Copy\index.scss 1:9  root stylesheet
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+Deprecation Warning on line 0, column 8 of file:///C:/Users/Bose/code/alegria-by/frontend/node_modules/@payloadcms/ui/dist/scss/styles.scss:0:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+0 | @import 'vars';
+
+node_modules\@payloadcms\ui\dist\scss\styles.scss 1:9       @import
+node_modules\@payloadcms\ui\dist\icons\Copy\index.scss 1:9  root stylesheet
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+Deprecation Warning on line 1, column 8 of file:///C:/Users/Bose/code/alegria-by/frontend/node_modules/@payloadcms/ui/dist/scss/styles.scss:1:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+1 | @import 'z-index';
+
+node_modules\@payloadcms\ui\dist\scss\styles.scss 2:9       @import
+node_modules\@payloadcms\ui\dist\icons\Copy\index.scss 1:9  root stylesheet
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+Deprecation Warning on line 7, column 8 of file:///C:/Users/Bose/code/alegria-by/frontend/node_modules/@payloadcms/ui/dist/scss/styles.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import 'type';
+
+node_modules\@payloadcms\ui\dist\scss\styles.scss 8:9       @import
+node_modules\@payloadcms\ui\dist\icons\Copy\index.scss 1:9  root stylesheet
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+Deprecation Warning on line 8, column 8 of file:///C:/Users/Bose/code/alegria-by/frontend/node_modules/@payloadcms/ui/dist/scss/styles.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import 'queries';
+
+node_modules\@payloadcms\ui\dist\scss\styles.scss 9:9       @import
+node_modules\@payloadcms\ui\dist\icons\Copy\index.scss 1:9  root stylesheet
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+4 repetitive deprecation warnings omitted.
+
+Import trace for requested module:
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[11].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[13].oneOf[11].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[13].oneOf[11].use[5]!./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.scss
+./node_modules/@payloadcms/ui/dist/icons/Copy/index.js
+./src/blocks/Code/CopyButton.tsx
+./src/blocks/Code/Component.client.tsx
+
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/7) ...
+   Generating static pages (1/7) 
+   Generating static pages (3/7) 
+   Generating static pages (5/7) 
+ ✓ Generating static pages (7/7)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS  Revalidate  Expire
+┌ ○ /                                    57.4 kB         194 kB          5m      1y
+├ ○ /_not-found                            977 B         101 kB
+├ ○ /interactive-cms-showcase            3.92 kB         104 kB
+├ ○ /page-builder                        3.16 kB         104 kB
+└ ƒ /search                                136 B         101 kB
++ First Load JS shared by all             100 kB
+  ├ chunks/4bd1b696-30cc8f9c90901ee3.js  53.2 kB
+  ├ chunks/684-1ed0ce9603e3d84a.js       45.2 kB
+  └ other shared chunks (total)          2.01 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> frontend@0.1.0 postbuild
+> next-sitemap --config next-sitemap.config.cjs
+
+✨ [next-sitemap] Loading next-sitemap config: file:///C:/Users/Bose/code/alegria-by/frontend/next-sitemap.config.cjs
+✅ [next-sitemap] Generation completed
+┌───────────────┬────────┐
+│ (index)       │ Values │
+├───────────────┼────────┤
+│ indexSitemaps │ 1      │
+│ sitemaps      │ 0      │
+└───────────────┴────────┘
+-----------------------------------------------------
+ SITEMAP INDICES 
+-----------------------------------------------------
+
+   ○ https://alegria.pages.dev/sitemap.xml
+
+

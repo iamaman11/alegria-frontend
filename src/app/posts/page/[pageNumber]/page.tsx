@@ -77,10 +77,11 @@ export async function generateStaticParams() {
   } catch (error) {
     // Enable On-Demand ISR: generate pages dynamically when first requested
     // This prevents build failures when API is unavailable during build time
-    console.warn('[ISR] generateStaticParams failed, using on-demand mode:', error instanceof Error ? error.message : String(error))
+    // On Cloudflare Pages, we MUST return at least one param for route to compile
+    console.warn('[ISR] generateStaticParams failed, using fallback:', error instanceof Error ? error.message : String(error))
 
-    // Return empty array - pages will be generated when users request them
+    // Return fallback page - will be generated when users request them
     // Subsequent requests will use ISR cache (revalidate: 300)
-    return []
+    return [{ pageNumber: '1' }]
   }
 }

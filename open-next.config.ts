@@ -1,6 +1,6 @@
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 
 export default defineCloudflareConfig({
-  // Minimal config for debugging
-  // Disable all optional features to isolate the issue
+  // Minimal configuration - let OpenNext handle defaults
+  // The issue is likely in runtime, not in config
 });

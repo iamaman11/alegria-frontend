@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 
-// CRITICAL: Hardcoded test page to verify dynamic routing works
-// If this page works but /posts/[slug] doesn't, problem is in API layer
+// Test page with 1-minute revalidation
 export const revalidate = 60
 export const dynamicParams = true
 
