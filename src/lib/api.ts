@@ -271,11 +271,16 @@ export async function getPageBySlug(
 ): Promise<Page | null> {
   try {
     const draftParam = draft ? '&draft=true' : '';
-    return await fetchAPI<Page>(
+    const page = await fetchAPI<Page>(
       `/api/pages/${slug}?depth=2${draftParam}`,
       options
     );
+    console.log(`[getPageBySlug] Successfully fetched page "${slug}":`, page?.title || 'N/A');
+    return page;
   } catch (error) {
+    console.error(`[getPageBySlug] Failed to fetch page "${slug}":`,
+      error instanceof Error ? error.message : String(error)
+    );
     return null;
   }
 }
