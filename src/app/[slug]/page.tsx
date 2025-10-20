@@ -22,38 +22,11 @@ export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  // Critical pages that MUST be pre-generated even if API fails
-  const criticalPages = ['newone']
-
-  try {
-    console.log('[generateStaticParams] Starting to fetch all page slugs...')
-    const slugs = await getAllPageSlugs()
-    console.log(`[generateStaticParams] Fetched ${slugs.length} slugs: ${slugs.join(', ')}`)
-
-    // Merge critical pages with API slugs (remove duplicates)
-    const allSlugs = Array.from(new Set([...criticalPages, ...slugs]))
-
-    const filtered = allSlugs
-      .filter((slug) => slug !== 'home')
-      .map((slug) => ({
-        slug,
-      }))
-
-    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages (including ${criticalPages.length} critical)`)
-    return filtered
-  } catch (error) {
-    // If API is not available during build, at least pre-generate critical pages
-    const errorMsg = error instanceof Error ? error.message : String(error)
-    console.error(`[generateStaticParams] FAILED to fetch pages: ${errorMsg}`)
-    console.warn(`[generateStaticParams] Falling back to critical pages only: ${criticalPages.join(', ')}`)
-
-    // Return critical pages to ensure they're pre-generated
-    return criticalPages
-      .filter((slug) => slug !== 'home')
-      .map((slug) => ({
-        slug,
-      }))
-  }
+  // ВАЖНО: Возвращаем пустой массив для pure on-demand ISR
+  // Все страницы будут генерироваться при первом запросе
+  console.log('[generateStaticParams] Returning empty array for pure on-demand ISR')
+  console.log('[generateStaticParams] All pages will be generated on first request')
+  return []
 }
 
 type Args = {

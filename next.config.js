@@ -75,7 +75,14 @@ const nextConfig = {
       '@payloadcms/ui',
       'react-icons',
     ],
+    // Force dynamic rendering for all routes (OpenNext workaround)
+    // This ensures on-demand ISR works properly
+    dynamicIO: true,
   },
+
+  // OpenNext specific configuration
+  // This helps OpenNext understand dynamic routes better
+  output: 'standalone',
 
   // Webpack configuration
   webpack: (config, { isServer }) => {
