@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 
-export const runtime = 'edge' // Use edge runtime for Cloudflare
+// NOTE: Do NOT use edge runtime with OpenNext on Cloudflare Pages
+// Edge runtime blocks dynamic route compilation for [slug] patterns
+// Use default Node.js runtime instead
 
 export async function GET() {
   return NextResponse.json({

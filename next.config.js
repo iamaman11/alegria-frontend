@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static export for Cloudflare Pages
-  // We'll use OpenNext adapter for SSR/ISR if needed
-
   // Image optimization settings
   images: {
     remotePatterns: [
@@ -94,4 +91,6 @@ const nextConfig = {
   },
 };
 
+// NOTE: OpenNext handles Cloudflare Pages transformation through CLI
+// @opennextjs/cloudflare is invoked via: npm run build:worker
 export default nextConfig;
