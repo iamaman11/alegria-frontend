@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { getPageBySlug } from '@/lib/api'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 
 // ISR configuration
@@ -39,17 +40,21 @@ export default async function HomePage() {
   }
 
   return (
-    <article className="pt-16 pb-24">
-      {page.title && (
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold">{page.title}</h1>
-          {page.description && (
-            <p className="mt-4 text-lg text-muted-foreground">{page.description}</p>
-          )}
-        </header>
-      )}
+    <article>
+      {page.hero && <RenderHero {...page.hero} />}
 
-      {page.layout && <RenderBlocks blocks={page.layout} />}
+      <div className="pt-16 pb-24">
+        {page.title && (
+          <header className="mb-8 container">
+            <h1 className="text-4xl font-bold">{page.title}</h1>
+            {page.description && (
+              <p className="mt-4 text-lg text-muted-foreground">{page.description}</p>
+            )}
+          </header>
+        )}
+
+        {page.layout && <RenderBlocks blocks={page.layout} />}
+      </div>
     </article>
   )
 }
