@@ -4,7 +4,7 @@
 // Architecture: Frontend -> Workers API -> Payload CMS (Vercel)
 // Workers provide caching layer (KV + D1) for optimal performance
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://alegria-api.majakojh.workers.dev';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud';
 
 // ============================================
 // TYPE DEFINITIONS from Payload Collections
