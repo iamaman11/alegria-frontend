@@ -22,39 +22,29 @@ export const revalidate = 604800 // 7 days fallback (verified safe TTL)
 export const dynamicParams = true
 
 export async function generateStaticParams() {
-  // Critical pages that must be pre-generated at build time
-  // These ensure basic site functionality even if API is down
-  const criticalSlugs = ['newone']
-
   try {
     console.log('[generateStaticParams] Starting to fetch all page slugs...')
     const slugs = await getAllPageSlugs()
     console.log(`[generateStaticParams] Fetched ${slugs.length} slugs: ${slugs.join(', ')}`)
 
-    // Merge API slugs with critical pages to ensure they're included
-    const mergedSlugs = Array.from(new Set([...criticalSlugs, ...slugs]))
-
-    const filtered = mergedSlugs
+    const filtered = slugs
       .filter((slug) => slug !== 'home')
       .map((slug) => ({
         slug,
       }))
 
-    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages (includes ${criticalSlugs.length} critical)`)
+    console.log(`[generateStaticParams] Pre-generating ${filtered.length} static pages`)
     return filtered
   } catch (error) {
-    // If API is not available during build, fall back to critical pages only
-    // This ensures core functionality works even during API outages
+    // If API is not available during build, return empty array
+    // dynamicParams=true allows on-demand generation for pages not in this list
+    // This ensures pages can be fetched dynamically even if API fails during build
     const errorMsg = error instanceof Error ? error.message : String(error)
     console.error(`[generateStaticParams] FAILED to fetch pages: ${errorMsg}`)
-    console.warn(`[generateStaticParams] Falling back to critical pages only: ${criticalSlugs.join(', ')}`)
+    console.warn(`[generateStaticParams] Will rely on on-demand generation (dynamicParams=true)`)
 
-    // Return at least the critical pages
-    return criticalSlugs
-      .filter((slug) => slug !== 'home')
-      .map((slug) => ({
-        slug,
-      }))
+    // Return empty array - dynamicParams=true will allow dynamic rendering
+    return []
   }
 }
 
