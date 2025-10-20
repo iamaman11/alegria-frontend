@@ -17,17 +17,19 @@ export function middleware(request: NextRequest) {
   // Get pathname
   const pathname = request.nextUrl.pathname
 
-  // WORKAROUND: OpenNext bug with root [slug] route
-  // Redirect /newone to /pages/newone where it actually works
-  if (!pathname.startsWith('/pages/') &&
+  // WORKAROUND: OpenNext bug - dynamic routes [slug] not compiled on Cloudflare Pages
+  // Use API route for dynamic page rendering: /api/render/[slug]
+  // This bypasses the OpenNext compilation issue while maintaining ISR
+  if (!pathname.startsWith('/api/') &&
       !pathname.startsWith('/_next/') &&
-      !pathname.startsWith('/api/') &&
       !pathname.startsWith('/posts/') &&
       !pathname.startsWith('/search') &&
       pathname !== '/' &&
       !pathname.match(/\.(ico|svg|png|jpg|jpeg|gif|webp|avif|xml|txt|json)$/i)) {
-    const pagePath = `/pages${pathname}`
-    return NextResponse.redirect(new URL(pagePath, request.url), 308) // Permanent redirect
+    // Rewrite dynamic page requests to API route
+    // e.g., /newone → /api/render/newone
+    const newUrl = new URL(`/api/render${pathname}`, request.url)
+    return NextResponse.rewrite(newUrl)
   }
 
   // Static assets - cache for 1 year
