@@ -1,6 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import styles from './page.module.css'
+import { getPageBySlug } from '@/lib/api'
 
 // ФАЗА 3: Hybrid ISR approach
 // - PRIMARY: Webhook-based cache invalidation (on-demand, 1-3 seconds)
@@ -51,24 +52,10 @@ interface Page {
 
 async function getPage(slug: string): Promise<Page | null> {
   try {
-    const apiUrl = 'https://api.poshta.cloud'
-    const endpoint = `${apiUrl}/api/pages/${encodeURIComponent(slug)}`
-
-    // Server-side fetch with ISR
-    const res = await fetch(endpoint, {
+    // Use lib/api with depth=2 to get full data including blocks and media
+    return await getPageBySlug(slug, false, {
       next: { revalidate: 60 }, // Revalidate cache every 60 seconds
-      headers: {
-        'Accept': 'application/json',
-      },
     })
-
-    if (!res.ok) {
-      return null
-    }
-
-    const data = await res.json()
-    // Workers may return data directly or wrapped in docs array
-    return data.docs?.[0] || data
   } catch (err) {
     console.error('[PageView] Error fetching page:', err)
     return null
