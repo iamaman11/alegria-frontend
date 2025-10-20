@@ -72,6 +72,15 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy .open-next --project-name=alegria-frontend
 
+      - name: Purge Cloudflare Cache
+        if: success()
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"files":["https://poshta.cloud/","https://poshta.cloud/*"]}'
+          echo "[OK] Cache purge initiated"
+
       - name: Create deployment
         uses: actions/github-script@v7
         if: always()
