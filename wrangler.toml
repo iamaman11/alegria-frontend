@@ -3,6 +3,13 @@ compatibility_date = "2025-05-05"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".open-next"
 
+# KV namespace for ISR cache - CRITICAL for dynamic routes [slug] on Cloudflare Pages
+# Without this binding, OpenNext cannot store ISR cache and dynamic routes fail
+[[kv_namespaces]]
+binding = "NEXT_CACHE_KV"
+id = "c92e174e58cd40f792b554d37ec6db53"
+preview_id = "c92e174e58cd40f792b554d37ec6db53"
+
 [vars]
 # Environment identification
 ENVIRONMENT = "production"

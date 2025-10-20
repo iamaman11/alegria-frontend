@@ -17,20 +17,9 @@ export function middleware(request: NextRequest) {
   // Get pathname
   const pathname = request.nextUrl.pathname
 
-  // WORKAROUND: OpenNext bug - dynamic routes [slug] not compiled on Cloudflare Pages
-  // Use API route for dynamic page rendering: /api/render/[slug]
-  // This bypasses the OpenNext compilation issue while maintaining ISR
-  if (!pathname.startsWith('/api/') &&
-      !pathname.startsWith('/_next/') &&
-      !pathname.startsWith('/posts/') &&
-      !pathname.startsWith('/search') &&
-      pathname !== '/' &&
-      !pathname.match(/\.(ico|svg|png|jpg|jpeg|gif|webp|avif|xml|txt|json)$/i)) {
-    // Rewrite dynamic page requests to API route
-    // e.g., /newone → /api/render/newone
-    const newUrl = new URL(`/api/render${pathname}`, request.url)
-    return NextResponse.rewrite(newUrl)
-  }
+  // Dynamic pages are now handled by OpenNext with proper KV bindings
+  // No middleware rewrite needed - routes compile correctly with bindings
+  // Just pass through for standard Next.js routing
 
   // Static assets - cache for 1 year
   if (
