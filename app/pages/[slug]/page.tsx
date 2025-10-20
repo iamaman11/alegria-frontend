@@ -53,9 +53,8 @@ interface Page {
 async function getPage(slug: string): Promise<Page | null> {
   try {
     // Use lib/api with depth=2 to get full data including blocks and media
-    return await getPageBySlug(slug, false, {
-      next: { revalidate: 60 }, // Revalidate cache every 60 seconds
-    })
+    // Don't override revalidate here - use the global export revalidate (604800 with webhook invalidation)
+    return await getPageBySlug(slug, false)
   } catch (err) {
     console.error('[PageView] Error fetching page:', err)
     return null
