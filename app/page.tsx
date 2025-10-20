@@ -53,7 +53,13 @@ export default async function HomePage() {
           </header>
         )}
 
-        {page.layout && <RenderBlocks blocks={page.layout} />}
+        {page.layout && page.layout.length > 0 ? (
+          <RenderBlocks blocks={page.layout} />
+        ) : (
+          <div className="text-center text-gray-500 py-8">
+            <p>Layout blocks: {page.layout?.length || 0}</p>
+          </div>
+        )}
       </div>
     </article>
   )
