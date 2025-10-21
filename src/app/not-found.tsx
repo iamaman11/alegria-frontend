@@ -1,18 +1,11 @@
 import Link from 'next/link'
-import React from 'react'
-
-import { Button } from '@/components/ui/button'
 
 export default function NotFound() {
   return (
-    <div className="container py-28">
-      <div className="prose max-w-none">
-        <h1 style={{ marginBottom: 0 }}>404</h1>
-        <p className="mb-4">This page could not be found.</p>
-      </div>
-      <Button asChild variant="default">
-        <Link href="/">Go home</Link>
-      </Button>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h1>404 - Page Not Found</h1>
+      <p>Sorry, the page you are looking for doesn't exist.</p>
+      <Link href="/">Go back home</Link>
     </div>
   )
 }

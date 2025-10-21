@@ -1,8 +1,9 @@
-import { Metadata } from 'next'
-import { getPageBySlug } from '@/lib/api'
+import type { Metadata } from 'next'
+
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getPageBySlug } from '@/lib/api'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
@@ -12,7 +13,7 @@ export const dynamicParams = true
 
 export async function generateStaticParams() {
   try {
-    // Fetch all pages from API
+    // Fetch all page slugs from API
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud'}/api/pages?limit=1000`, {
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ export async function generateStaticParams() {
         slug: page.slug,
       }))
   } catch (error) {
-    console.warn('[generateStaticParams] Failed to fetch pages, returning empty array for on-demand generation', error)
+    console.warn('[generateStaticParams] Failed to fetch pages:', error)
     return []
   }
 }
@@ -59,14 +60,14 @@ export default async function Page({ params: paramsPromise }: Args) {
         {page.title && (
           <header className="mb-8 container">
             <h1 className="text-4xl font-bold">{page.title}</h1>
-            {page.description && (
-              <p className="mt-4 text-lg text-muted-foreground">{page.description}</p>
+            {(page as any).description && (
+              <p className="mt-4 text-lg text-muted-foreground">{(page as any).description}</p>
             )}
           </header>
         )}
 
-        {page.layout && page.layout.length > 0 ? (
-          <RenderBlocks blocks={page.layout} />
+        {(page as any).layout && (page as any).layout.length > 0 ? (
+          <RenderBlocks blocks={(page as any).layout} />
         ) : (
           <div className="text-center text-gray-500 py-8">
             <p>No layout blocks available</p>

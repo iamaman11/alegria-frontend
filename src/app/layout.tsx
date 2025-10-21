@@ -10,9 +10,9 @@ import { Header } from '@/Header/Component'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
-
-import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+
+import './(frontend)/globals.css'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
