@@ -3,9 +3,9 @@ User-agent: *
 Disallow: /
 
 # Host
-Host: https://alegria.pages.dev
+Host: https://poshta.cloud
 
 # Sitemaps
-Sitemap: https://alegria.pages.dev/sitemap.xml
-Sitemap: https://alegria.pages.dev/pages-sitemap.xml
-Sitemap: https://alegria.pages.dev/posts-sitemap.xml
+Sitemap: https://poshta.cloud/sitemap.xml
+Sitemap: https://poshta.cloud/pages-sitemap.xml
+Sitemap: https://poshta.cloud/posts-sitemap.xml

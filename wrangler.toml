@@ -5,6 +5,30 @@ pages_build_output_dir = ".open-next"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# ============================================
+# R2 BINDINGS: Next.js Incremental Cache
+# ============================================
+# Используем существующий bucket 'alegria-media' с префиксом
+[[r2_buckets]]
+binding = "NEXT_INC_CACHE_R2_BUCKET"
+bucket_name = "alegria-media"
+
+# ============================================
+# D1 BINDINGS: Tag Cache for On-Demand Revalidation
+# ============================================
+[[d1_databases]]
+binding = "NEXT_TAG_CACHE_D1"
+database_name = "nextjs-tag-cache"
+database_id = "6c75b795-e0a7-4fe0-8653-6b35082b1e44"
+
+# ============================================
+# DURABLE OBJECTS: ISR Queue
+# ============================================
+[[durable_objects.bindings]]
+name = "NEXT_ISR_QUEUE_DO"
+class_name = "NextISRQueue"
+script_name = "alegria-frontend"
+
 [vars]
 # Environment identification
 ENVIRONMENT = "production"
@@ -13,3 +37,12 @@ ENVIRONMENT = "production"
 NEXT_PUBLIC_API_URL = "https://api.poshta.cloud"
 NEXT_PUBLIC_SITE_URL = "https://poshta.cloud"
 API_URL = "https://api.poshta.cloud"
+
+# ============================================
+# NEXT.JS CACHE CONFIGURATION
+# ============================================
+# Debug режим для кэширования (удалить в production после тестирования)
+NEXT_PRIVATE_DEBUG_CACHE = "1"
+
+# R2 bucket prefix для разделения cache от media
+NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
