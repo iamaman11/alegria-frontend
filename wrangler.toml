@@ -24,10 +24,11 @@ database_id = "6c75b795-e0a7-4fe0-8653-6b35082b1e44"
 # ============================================
 # DURABLE OBJECTS: ISR Queue
 # ============================================
-[[durable_objects.bindings]]
-name = "NEXT_ISR_QUEUE_DO"
-class_name = "NextISRQueue"
-script_name = "alegria-frontend"
+# ВРЕМЕННО ОТКЛЮЧЕНО: OpenNext еще не экспортирует DO class корректно в production
+# [[durable_objects.bindings]]
+# name = "NEXT_ISR_QUEUE_DO"
+# class_name = "NextISRQueue"
+# script_name = "alegria-frontend"
 
 [vars]
 # Environment identification

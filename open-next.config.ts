@@ -1,8 +1,6 @@
 import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 import { withRegionalCache } from "@opennextjs/cloudflare/overrides/incremental-cache/regional-cache";
-import doQueue from "@opennextjs/cloudflare/overrides/queue/do-queue";
-import queueCache from "@opennextjs/cloudflare/overrides/queue/queue-cache";
 import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-tag-cache";
 
 /**
@@ -15,6 +13,8 @@ import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-t
  *
  * Цель: x-nextjs-cache: HIT при 90% запросов
  * TTFB: 25-35ms (улучшение на 30%)
+ *
+ * NOTE: Durable Object Queue временно отключен до фикса OpenNext export
  */
 export default defineCloudflareConfig({
   // =====================================
@@ -29,18 +29,6 @@ export default defineCloudflareConfig({
     // Пропускать проверку Tag Cache при cache hit (performance optimization)
     // Ускоряет ответ на ~2-5ms при HIT
     bypassTagCacheOnCacheHit: true,
-  }),
-
-  // =====================================
-  // QUEUE: Durable Object Queue
-  // =====================================
-  // Координирует time-based ISR revalidation между регионами
-  queue: queueCache(doQueue, {
-    // TTL для queue результатов в regional cache
-    regionalCacheTtlSec: 60, // 1 минута
-
-    // Ждать подтверждения от queue (более надежно, но +10-20ms latency)
-    waitForQueueAck: true,
   }),
 
   // =====================================
