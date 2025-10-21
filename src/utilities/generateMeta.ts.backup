@@ -30,23 +30,8 @@ export const generateMeta = async (args: {
     ? doc?.meta?.title + ' | Payload Website Template'
     : 'Payload Website Template'
 
-  const slug = Array.isArray(doc?.slug) ? doc.slug.join('/') : doc?.slug || ''
-  const canonical = slug ? `https://poshta.cloud/${slug}` : 'https://poshta.cloud'
-
-  // Parse robots meta tag
-  const robotsValue = (doc as any)?.meta?.robots || 'index,follow'
-  const robotsConfig = {
-    index: robotsValue.includes('index'),
-    follow: robotsValue.includes('follow'),
-  }
-
   return {
-    title,
-    description: doc?.meta?.description || undefined,
-    alternates: {
-      canonical,
-    },
-    robots: robotsConfig,
+    description: doc?.meta?.description,
     openGraph: mergeOpenGraph({
       description: doc?.meta?.description || '',
       images: ogImage
@@ -59,11 +44,6 @@ export const generateMeta = async (args: {
       title,
       url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
     }),
-    twitter: {
-      card: 'summary_large_image',
-      title: doc?.meta?.title || title,
-      description: doc?.meta?.description || undefined,
-      images: ogImage ? [ogImage] : undefined,
-    },
+    title,
   }
 }

@@ -11,10 +11,15 @@ import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { getServerSideURL } from '@/utilities/getURL'
+import { getSiteSettings } from '@/lib/api'
+import { generateOrganizationJSONLD } from '@/utilities/generateJSONLD'
 
 import './(frontend)/globals.css'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const siteSettings = await getSiteSettings()
+  const organizationJSONLD = generateOrganizationJSONLD(siteSettings)
+
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
@@ -23,6 +28,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
       <body>
+        {organizationJSONLD && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJSONLD) }}
+          />
+        )}
         <Providers>
           <Header />
           {children}

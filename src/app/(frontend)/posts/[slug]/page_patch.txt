@@ -1,0 +1,19 @@
+import { generatePostJSONLD } from '@/utilities/generateJSONLD'
+
+// ... in component, after "if (!post) return..."
+
+  const postJSONLD = generatePostJSONLD(post)
+
+  return (
+    <>
+      {postJSONLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(postJSONLD) }}
+        />
+      )}
+      <article>
+      ...rest of content...
+      </article>
+    </>
+  )

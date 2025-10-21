@@ -1,5 +1,5 @@
 'use client'
-import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
+import type { FormFieldBlock, Form as FormType } from './types'
 
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
@@ -27,12 +27,12 @@ export const FormBlock: React.FC<
   const {
     enableIntro,
     form: formFromProps,
-    form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {},
+    form: { id: formID, confirmationMessage, confirmationType, redirect, submitButtonLabel } = {} as any,
     introContent,
   } = props
 
   const formMethods = useForm({
-    defaultValues: formFromProps.fields,
+    defaultValues: formFromProps.fields as any,
   })
   const {
     control,
@@ -130,7 +130,7 @@ export const FormBlock: React.FC<
               <div className="mb-4 last:mb-0">
                 {formFromProps &&
                   formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
+                  formFromProps.fields?.map((field: any, index: number) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
                     if (Field) {

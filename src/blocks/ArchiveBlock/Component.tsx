@@ -26,7 +26,7 @@ export const ArchiveBlock: React.FC<
     if (flattenedCategories && flattenedCategories.length > 0) {
       // Fetch posts by first category (API limitation - can extend to support multiple)
       const categoryId = flattenedCategories[0]
-      const fetchedPosts = await getPostsByCategory(categoryId as string, 1, limit)
+      const fetchedPosts = await getPostsByCategory(String(categoryId), 1, limit)
       posts = fetchedPosts.docs
     } else {
       // Fetch all posts

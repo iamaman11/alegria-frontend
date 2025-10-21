@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { generatePageJSONLD, generateBreadcrumbsJSONLD } from '@/utilities/generateJSONLD'
 import { getPageBySlug } from '@/lib/api'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
@@ -52,8 +53,24 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   if (!page) return <PayloadRedirects url={url} />
 
+  const pageJSONLD = generatePageJSONLD(page)
+  const breadcrumbsJSONLD = generateBreadcrumbsJSONLD(page)
+
   return (
-    <article>
+    <>
+      {pageJSONLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJSONLD) }}
+        />
+      )}
+      {breadcrumbsJSONLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsJSONLD) }}
+        />
+      )}
+      <article>
       {page.hero && <RenderHero {...page.hero} />}
 
       <div className="pt-16 pb-24">
@@ -74,7 +91,8 @@ export default async function Page({ params: paramsPromise }: Args) {
           </div>
         )}
       </div>
-    </article>
+      </article>
+    </>
   )
 }
 

@@ -4,113 +4,18 @@
 // Architecture: Frontend -> Workers API -> Payload CMS (Vercel)
 // Workers provide caching layer (KV + D1) for optimal performance
 
+import type { Post, Page, Category, Media, User } from '@/payload-types'
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud';
 
 // ============================================
 // TYPE DEFINITIONS from Payload Collections
 // ============================================
 
-export interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  heroImage?: Media;
-  content: any; // Lexical JSON
-  relatedPosts?: Post[];
-  categories?: Category[];
-  meta?: {
-    title?: string;
-    description?: string;
-    image?: Media;
-  };
-  publishedAt?: string;
-  authors?: User[];
-  populatedAuthors?: Array<{
-    id: string;
-    name: string;
-  }>;
-  _status?: 'draft' | 'published';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  hero?: {
-    type: 'highImpact' | 'mediumImpact' | 'lowImpact' | 'none';
-    richText?: any;
-    links?: Array<{
-      link: {
-        type: 'reference' | 'custom';
-        label: string;
-        url?: string;
-        reference?: {
-          relationTo: string;
-          value: string | Page | Post;
-        };
-      };
-    }>;
-    media?: Media;
-  };
-  layout?: Array<{
-    blockType: string;
-    [key: string]: any;
-  }>;
-  meta?: {
-    title?: string;
-    description?: string;
-    image?: Media;
-  };
-  publishedAt?: string;
-  _status?: 'draft' | 'published';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Category {
-  id: string;
-  title: string;
-  slug?: string;
-  parent?: Category | string;
-  breadcrumbs?: Array<{
-    doc: Category | string;
-    url: string;
-    label: string;
-  }>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Media {
-  id: string;
-  alt?: string;
-  caption?: any; // Lexical JSON
-  url?: string;
-  thumbnailURL?: string;
-  filename?: string;
-  mimeType?: string;
-  filesize?: number;
-  width?: number;
-  height?: number;
-  focalX?: number;
-  focalY?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface User {
-  id: string;
-  name?: string;
-  roles?: Array<'admin' | 'user'>;
-  email?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+ 
+export type { Post, Page, Category, Media, User } from '@/payload-types'
 
 export interface Redirect {
-  id: string;
+  id: string | number;
   from: string;
   to: {
     type: 'reference' | 'custom';
@@ -425,7 +330,7 @@ export async function getAllRedirects(
 // ============================================
 
 export async function getMediaById(
-  id: string,
+  id: string | number,
   options?: RequestInit
 ): Promise<Media | null> {
   try {
@@ -459,7 +364,7 @@ export async function searchContent(
 // ============================================
 
 export interface HeaderGlobal {
-  id: string;
+  id: string | number;
   navItems?: Array<{
     link: {
       type: 'reference' | 'custom';
@@ -474,7 +379,7 @@ export interface HeaderGlobal {
 }
 
 export interface FooterGlobal {
-  id: string;
+  id: string | number;
   navItems?: Array<{
     link: {
       type: 'reference' | 'custom';
@@ -533,7 +438,7 @@ export async function revalidateCache(
 export function getMediaURL(media?: Media | string): string | undefined {
   if (!media) return undefined;
   if (typeof media === 'string') return media;
-  return media.url;
+  return media.url || undefined;
 }
 
 /**
@@ -564,4 +469,23 @@ export function formatDate(dateString: string, locale: string = 'ru-RU'): string
     month: 'long',
     day: 'numeric',
   });
+}
+
+export async function getSiteSettings(): Promise<any> {
+  const url = `${API_URL}/api/globals/site-settings`
+
+  try {
+    const response = await fetch(url, {
+      next: { tags: ['global_site-settings'] },
+    })
+
+    if (!response.ok) {
+      throw new Error(`API returned ${response.status}`)
+    }
+
+    return response.json()
+  } catch (error) {
+    console.error('[getSiteSettings] Failed:', error)
+    return null
+  }
 }

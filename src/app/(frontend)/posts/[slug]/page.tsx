@@ -8,6 +8,7 @@ import RichText from '@/components/RichText'
 
 import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
+import { generatePostJSONLD } from '@/utilities/generateJSONLD'
 import PageClient from './page.client'
 
 // ISR: 10 minutes revalidation for posts (per deployment guide)
@@ -46,7 +47,17 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  const postJSONLD = generatePostJSONLD(post)
+
+
   return (
+    <>
+      {postJSONLD && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(postJSONLD) }}
+        />
+      )}
     <article className="pt-16 pb-16">
       <PageClient />
 
@@ -67,6 +78,7 @@ export default async function Post({ params: paramsPromise }: Args) {
         </div>
       </div>
     </article>
+    </>
   )
 }
 
