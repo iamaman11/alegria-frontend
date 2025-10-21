@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - cache-migration-preview  # Preview branch для тестирования cache миграции
   workflow_dispatch:
 
 env:
