@@ -8,10 +8,9 @@ import { getPageBySlug } from '@/lib/api'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
-// Static generation with on-demand revalidation via webhook
-// Pages are fully static (not ISR) and cached in R2
-// Updates from CMS trigger webhook invalidation to Workers API
-export const dynamicParams = true // Allow runtime generation for new slugs
+// ISR configuration for dynamic pages
+export const revalidate = 604800 // 7 days - will be invalidated by webhook
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   try {
