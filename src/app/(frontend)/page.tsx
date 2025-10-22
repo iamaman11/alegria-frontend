@@ -7,8 +7,9 @@ import { getPageBySlug } from '@/lib/api'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
-// ISR configuration - 5 minutes for home page
-export const revalidate = 300
+// Static generation with on-demand revalidation via webhook
+// Homepage is fully static (not ISR) and cached in R2
+// Updates from CMS trigger webhook invalidation to Workers API
 export const dynamicParams = true
 
 export async function generateMetadata(): Promise<Metadata> {
