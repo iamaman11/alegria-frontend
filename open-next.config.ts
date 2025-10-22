@@ -5,15 +5,16 @@ import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-t
 // import customIncrementalCache from "./lib/custom-cache-handler";
 
 /**
- * EXPERT CONFIGURATION: 3-Tier Next.js Cache on Cloudflare
+ * EXPERT CONFIGURATION: 4-Tier Next.js Cache on Cloudflare
  *
- * Архитектура:
- * Layer 1: Regional Cache (in-memory, 1-30 минут)
- * Layer 2: R2 Object Storage (persistent, 7 дней)
- * Layer 3: Workers API → Payload CMS (fallback)
+ * Архитектура кэширования:
+ * Layer 0: Cloudflare CDN (Global Edge Network) - статические ассеты
+ * Layer 1: Regional Cache (in-memory, 1-30 минут) - SSR/ISR страницы
+ * Layer 2: R2 Object Storage (persistent, 7 дней) - персистентный кэш
+ * Layer 3: Workers API → Payload CMS (fallback) - источник данных
  *
  * Цель: x-nextjs-cache: HIT при 90% запросов
- * TTFB: 25-35ms (улучшение на 30%)
+ * TTFB: 18-25ms (улучшение на 30% от 25-35ms)
  *
  * NOTE: Durable Object Queue временно отключен до фикса OpenNext export
  */

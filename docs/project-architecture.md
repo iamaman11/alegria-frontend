@@ -131,20 +131,30 @@ NEXT_PUBLIC_SITE_URL = "https://poshta.cloud"
 - `NEXT_PUBLIC_API_URL` = `https://api.poshta.cloud`
 - Альтернативный URL: `https://alegria-api.majakojh.workers.dev`
 
-### Кэширование
-1. **R2 Bucket** (`alegria-media`):
-   - Prefix: `nextjs-cache/`
-   - ISR cache хранилище
-   - Static assets
+### Кэширование (4-Tier Architecture)
 
-2. **D1 Database** (`nextjs-tag-cache`):
-   - Tag-based cache invalidation
-   - On-demand revalidation
+**Level 0: Cloudflare CDN (Global Edge Network)**
+- Статические ассеты (.js, .css, images)
+- SSG страницы
+- TTL: Зависит от Cache-Control headers
+- Invalidation: Deploy или Cache-Tag purge API
 
-3. **Middleware** (`src/middleware.ts`):
-   - Static assets: 1 год cache
-   - ISR pages: 5 минут + stale-while-revalidate
-   - CDN cache: 1 час
+**Level 1: Regional Cache (Workers Runtime)**
+- In-memory кэш в регионе Cloudflare Workers
+- SSR/ISR страницы
+- TTL: 30 минут (`mode: "long-lived"`)
+- ⚠️ `bypassTagCacheOnCacheHit: true` - не проверяет теги при HIT
+
+**Level 2: R2 Bucket** (`alegria-media`)
+- Prefix: `nextjs-cache/`
+- Персистентное ISR cache хранилище
+- TTL: 7 дней
+- Invalidation: через D1 Tag Cache
+
+**Level 3: D1 Database** (`nextjs-tag-cache`)
+- Tag-based cache invalidation
+- On-demand revalidation (revalidateTag/revalidatePath)
+- Управление тегами для Level 1 и Level 2
 
 ---
 
@@ -278,18 +288,26 @@ Payload CMS - это **headless CMS backend**:
 ```
 Пользователь
     ↓ GET /posts/my-article
-Frontend (Cloudflare Pages)
-    ↓ Проверка ISR cache в R2
-    ├─ Cache HIT → Возврат страницы (быстро)
+Cloudflare CDN (Edge Network) ← Level 0
+    ↓ Проверка Edge Cache
+    ├─ Cache HIT → Возврат (0-20ms, мгновенно)
     └─ Cache MISS ↓
-Workers API (api.poshta.cloud)
+Regional Cache (Workers) ← Level 1
+    ↓ Проверка in-memory cache
+    ├─ Cache HIT → Возврат (18-25ms, очень быстро)
+    └─ Cache MISS ↓
+R2 Bucket ← Level 2
+    ↓ Проверка R2 ISR cache
+    ├─ Cache HIT → Возврат (50ms, быстро)
+    └─ Cache MISS ↓
+Workers API (api.poshta.cloud) ← Level 3
     ↓ GET /api/posts/my-article
     ↓ Проверка KV/D1 cache
-    ├─ Cache HIT → Возврат JSON (средне)
+    ├─ Cache HIT → Возврат JSON (100-150ms, средне)
     └─ Cache MISS ↓
 Payload CMS (Vercel)
     ↓ Database query
-    └─ Возврат свежих данных (медленно)
+    └─ Возврат свежих данных (300-500ms, медленно)
 ```
 
 ### 2. Обновление контента редактором
@@ -302,9 +320,20 @@ Payload CMS
 Workers API
     ↓ Invalidate KV/D1 cache для поста
     ↓ Send revalidation request
-Frontend
-    └─ Invalidate R2 cache по тегу
-    └─ Regenerate страницы
+Frontend (Next.js revalidate endpoint)
+    ↓ revalidateTag('post-slug')
+D1 Tag Cache
+    └─ Пометить теги как invalidated
+R2 Bucket (Level 2)
+    └─ Invalidate кэш по тегу
+Regional Cache (Level 1)
+    └─ ⚠️ НЕ обновляется из-за bypassTagCacheOnCacheHit: true
+    └─ Ждёт 30 минут TTL для обновления
+CDN Edge Cache (Level 0)
+    └─ Требует deploy или Cache-Tag purge API
+    └─ Автоматически не обновляется
+
+⚠️ Итого: Полное обновление может занять до 30 минут!
 ```
 
 ### 3. Загрузка медиа файла

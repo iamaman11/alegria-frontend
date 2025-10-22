@@ -72,26 +72,48 @@ database_id = "6c75b795-e0a7-4fe0-8653-6b35082b1e44"
 #### АРХИТЕКТУРА
 
 ```
-Request → Regional Cache (30 min) → R2 (7 days) → Workers API → Payload CMS
-          ↑ Layer 1                ↑ Layer 2     ↑ Layer 3
-          In-memory                 Persistent    Fallback
+Client (браузер)
+    ↓
+Cloudflare CDN (Global Edge Network) ← Level 0: CDN Cache
+    ├─→ Статические ассеты (.js, .css, images) → Cache HIT
+    └─→ Динамические запросы → Cloudflare Workers
+            ↓
+        Regional Cache (30 min) ← Level 1: In-memory
+            ↓ (при miss)
+        R2 Bucket (7 days) ← Level 2: Persistent
+            ↓ (при miss)
+        Workers API ← Level 3: Fallback
+            ↓
+        Payload CMS ← Источник данных
+```
+
+**Полная цепочка кэширования:**
+```
+Request → CDN Edge → Regional Cache → R2 Storage → Workers API → Payload CMS
+          ↑ Level 0  ↑ Level 1        ↑ Level 2     ↑ Level 3
+          Global     In-memory         Persistent    Fallback
 ```
 
 #### ВЛИЯНИЕ
 
 **Положительное:**
-- ✅ TTFB улучшен на 30% (25-35ms → 18-25ms)
+- ✅ **Cloudflare CDN** доставляет статические ассеты мгновенно из ближайшего Edge
+- ✅ TTFB улучшен на 30% (25-35ms → 18-25ms) для динамических страниц
 - ✅ 90%+ requests получают HIT из Regional Cache
 - ✅ Меньше нагрузка на R2 и Workers API
+- ✅ Global Edge Cache снижает latency для пользователей по всему миру
 
 **Потенциальная проблема:**
-- ⚠️ Regional Cache живет **30 минут** независимо от webhook
+- ⚠️ **CDN Edge Cache** может хранить SSG страницы до следующего deploy
+- ⚠️ **Regional Cache** живет **30 минут** независимо от webhook
 - ⚠️ Даже после webhook invalidation, старые данные могут оставаться в памяти региона
+- ⚠️ Для полного обновления нужно инвалидировать **ОБА** слоя: CDN + Regional
 
 **Решение:**
-- D1 Tag Cache используется для invalidation
+- D1 Tag Cache используется для invalidation Regional Cache + R2
 - `bypassTagCacheOnCacheHit: true` - **НЕ** проверяет теги при HIT
 - Это означает: **webhook invalidation может задержаться на 30 минут!**
+- CDN Edge Cache обновляется при deploy или через Cache-Tag purge API
 
 ---
 
