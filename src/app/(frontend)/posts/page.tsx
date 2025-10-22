@@ -8,8 +8,8 @@ import React from 'react'
 import PageClient from './page.client'
 
 // ISR configuration for posts listing
-// Revalidate every 5 minutes for fresh content
-export const revalidate = 300 // 5 minutes for listing pages
+// Revalidate every 30 minutes for fresh content
+export const revalidate = 1800 // 30 minutes for listing pages - optimized for better HIT ratio
 
 // Allow dynamic params for on-demand ISR if needed
 export const dynamicParams = true

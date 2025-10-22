@@ -42,8 +42,5 @@ API_URL = "https://api.poshta.cloud"
 # ============================================
 # NEXT.JS CACHE CONFIGURATION
 # ============================================
-# Debug режим для кэширования (удалить в production после тестирования)
-NEXT_PRIVATE_DEBUG_CACHE = "1"
-
 # R2 bucket prefix для разделения cache от media
 NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
