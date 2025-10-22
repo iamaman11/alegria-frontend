@@ -3,17 +3,23 @@ import React, { Fragment } from 'react'
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
+import { Banner } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { Code } from '@/blocks/Code/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
+  banner: Banner,
+  code: Code,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  relatedPosts: RelatedPosts,
 }
 
 export const RenderBlocks: React.FC<{

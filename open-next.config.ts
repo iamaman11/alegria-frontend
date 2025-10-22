@@ -2,6 +2,7 @@ import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 import r2IncrementalCache from "@opennextjs/cloudflare/overrides/incremental-cache/r2-incremental-cache";
 import { withRegionalCache } from "@opennextjs/cloudflare/overrides/incremental-cache/regional-cache";
 import d1NextTagCache from "@opennextjs/cloudflare/overrides/tag-cache/d1-next-tag-cache";
+// import customIncrementalCache from "./lib/custom-cache-handler";
 
 /**
  * EXPERT CONFIGURATION: 3-Tier Next.js Cache on Cloudflare
@@ -21,6 +22,8 @@ export default defineCloudflareConfig({
   // INCREMENTAL CACHE: R2 + Regional
   // =====================================
   // R2 с Regional Cache wrapper для максимальной производительности
+
+  // OPTION 1: Standard configuration (ISR pages show STALE after revalidate period)
   incrementalCache: withRegionalCache(r2IncrementalCache, {
     // "long-lived" = 30 минут в памяти региона
     // "short-lived" = 1 минута (для часто обновляемого контента)
@@ -30,6 +33,12 @@ export default defineCloudflareConfig({
     // Ускоряет ответ на ~2-5ms при HIT
     bypassTagCacheOnCacheHit: true,
   }),
+
+  // OPTION 2: Custom handler for always HIT (uncomment to enable)
+  // incrementalCache: withRegionalCache(customIncrementalCache, {
+  //   mode: "long-lived",
+  //   bypassTagCacheOnCacheHit: true,
+  // }),
 
   // =====================================
   // TAG CACHE: D1 Database
