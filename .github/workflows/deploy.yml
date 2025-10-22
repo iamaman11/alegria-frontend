@@ -36,6 +36,12 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud' }}
 
+      - name: Populate R2 Incremental Cache
+        run: npx @opennextjs/cloudflare populateCache remote --config=wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Prepare .open-next for Pages deployment
         run: |
           cd .open-next
