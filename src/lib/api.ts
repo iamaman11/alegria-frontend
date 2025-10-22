@@ -5,6 +5,8 @@
 // Workers provide caching layer (KV + D1) for optimal performance
 
 import type { Post, Page, Category, Media, User } from '@/payload-types'
+import { logger } from './logger'
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud';
 
 // ============================================
@@ -92,14 +94,14 @@ async function fetchAPI<T>(
     // Retry logic for transient errors
     if (isRetryable && retryCount < maxRetries) {
       const delay = baseDelay * Math.pow(2, retryCount); // exponential backoff
-      console.warn(
+      logger.warn(
         `[API] Retry attempt ${retryCount + 1}/${maxRetries} after ${delay}ms: ${endpoint}`
       );
       await new Promise(resolve => setTimeout(resolve, delay));
       return fetchAPI<T>(endpoint, options, retryCount + 1);
     }
 
-    console.error(`[API Error] ${endpoint} (retries exhausted):`, errorMsg);
+    logger.error(`[API Error] ${endpoint} (retries exhausted):`, errorMsg);
     throw error;
   }
 }
@@ -164,11 +166,9 @@ export async function getAllPostSlugs(): Promise<string[]> {
       page++;
 
       // Log progress for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[getAllPostSlugs] Fetched page ${page - 1}: ${response.docs.length} posts, total: ${allSlugs.length}`);
-      }
+      logger.log(`[getAllPostSlugs] Fetched page ${page - 1}: ${response.docs.length} posts, total: ${allSlugs.length}`);
     } catch (error) {
-      console.warn(
+      logger.warn(
         `[getAllPostSlugs] Failed to fetch page ${page}:`,
         error instanceof Error ? error.message : String(error)
       );
@@ -177,7 +177,7 @@ export async function getAllPostSlugs(): Promise<string[]> {
     }
   }
 
-  console.log(`[getAllPostSlugs] Successfully fetched ${allSlugs.length} total posts`);
+  logger.log(`[getAllPostSlugs] Successfully fetched ${allSlugs.length} total posts`);
   return allSlugs;
 }
 
@@ -206,17 +206,17 @@ export async function getPageBySlug(
     const endpoint = `/api/pages/${slug}?depth=2${draftParam}`;
     const fullUrl = `${API_URL}${endpoint}`;
 
-    console.log(`[getPageBySlug] ========== START ==========`);
-    console.log(`[getPageBySlug] Slug: ${slug}`);
-    console.log(`[getPageBySlug] Full URL: ${fullUrl}`);
-    console.log(`[getPageBySlug] Environment: ${typeof window === 'undefined' ? 'server' : 'browser'}`);
-    console.log(`[getPageBySlug] API_URL: ${API_URL}`);
+    logger.log(`[getPageBySlug] ========== START ==========`);
+    logger.log(`[getPageBySlug] Slug: ${slug}`);
+    logger.log(`[getPageBySlug] Full URL: ${fullUrl}`);
+    logger.log(`[getPageBySlug] Environment: ${typeof window === 'undefined' ? 'server' : 'browser'}`);
+    logger.log(`[getPageBySlug] API_URL: ${API_URL}`);
 
     const page = await fetchAPI<Page>(endpoint, options);
 
     const duration = Date.now() - startTime;
-    console.log(`[getPageBySlug] SUCCESS in ${duration}ms: "${slug}" -> "${page?.title || 'N/A'}"`);
-    console.log(`[getPageBySlug] ========== END ==========`);
+    logger.log(`[getPageBySlug] SUCCESS in ${duration}ms: "${slug}" -> "${page?.title || 'N/A'}"`);
+    logger.log(`[getPageBySlug] ========== END ==========`);
     return page;
   } catch (error) {
     const duration = Date.now() - startTime;
@@ -226,24 +226,24 @@ export async function getPageBySlug(
     const isCorsError = errorMsg.includes('CORS') || errorMsg.includes('cors');
     const isTimeoutError = errorMsg.includes('timeout') || errorMsg.includes('Timeout');
 
-    console.error(`[getPageBySlug] ========== FAILURE ==========`);
-    console.error(`[getPageBySlug] Slug: ${slug}`);
-    console.error(`[getPageBySlug] Duration: ${duration}ms`);
-    console.error(`[getPageBySlug] Error Type: ${errorType}`);
-    console.error(`[getPageBySlug] Error Message: ${errorMsg}`);
-    console.error(`[getPageBySlug] Is Network Error: ${isNetworkError}`);
-    console.error(`[getPageBySlug] Is CORS Error: ${isCorsError}`);
-    console.error(`[getPageBySlug] Is Timeout Error: ${isTimeoutError}`);
+    logger.error(`[getPageBySlug] ========== FAILURE ==========`);
+    logger.error(`[getPageBySlug] Slug: ${slug}`);
+    logger.error(`[getPageBySlug] Duration: ${duration}ms`);
+    logger.error(`[getPageBySlug] Error Type: ${errorType}`);
+    logger.error(`[getPageBySlug] Error Message: ${errorMsg}`);
+    logger.error(`[getPageBySlug] Is Network Error: ${isNetworkError}`);
+    logger.error(`[getPageBySlug] Is CORS Error: ${isCorsError}`);
+    logger.error(`[getPageBySlug] Is Timeout Error: ${isTimeoutError}`);
 
     if (error instanceof Error && error.stack) {
       const stackLines = error.stack.split('\n').slice(0, 5);
-      console.error(`[getPageBySlug] Stack Trace:`);
+      logger.error(`[getPageBySlug] Stack Trace:`);
       stackLines.forEach((line, i) => {
-        console.error(`[getPageBySlug]   ${i}: ${line.trim()}`);
+        logger.error(`[getPageBySlug]   ${i}: ${line.trim()}`);
       });
     }
 
-    console.error(`[getPageBySlug] ========== END (FAILED) ==========`);
+    logger.error(`[getPageBySlug] ========== END (FAILED) ==========`);
     return null;
   }
 }
@@ -265,11 +265,9 @@ export async function getAllPageSlugs(): Promise<string[]> {
       page++;
 
       // Log progress for debugging
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[getAllPageSlugs] Fetched page ${page - 1}: ${response.docs.length} pages, total: ${allSlugs.length}`);
-      }
+      logger.log(`[getAllPageSlugs] Fetched page ${page - 1}: ${response.docs.length} pages, total: ${allSlugs.length}`);
     } catch (error) {
-      console.warn(
+      logger.warn(
         `[getAllPageSlugs] Failed to fetch page ${page}:`,
         error instanceof Error ? error.message : String(error)
       );
@@ -278,7 +276,7 @@ export async function getAllPageSlugs(): Promise<string[]> {
     }
   }
 
-  console.log(`[getAllPageSlugs] Successfully fetched ${allSlugs.length} total pages`);
+  logger.log(`[getAllPageSlugs] Successfully fetched ${allSlugs.length} total pages`);
   return allSlugs;
 }
 
@@ -320,7 +318,7 @@ export async function getAllRedirects(
     );
     return response.docs;
   } catch (error) {
-    console.error('[Redirects API Error]', error);
+    logger.error('[Redirects API Error]', error);
     return [];
   }
 }
@@ -485,7 +483,7 @@ export async function getSiteSettings(): Promise<any> {
 
     return response.json()
   } catch (error) {
-    console.error('[getSiteSettings] Failed:', error)
+    logger.error('[getSiteSettings] Failed:', error)
     return null
   }
 }

@@ -1,11 +1,15 @@
-# *
+# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow: /
+Allow: /
 
-# Host
-Host: https://poshta.cloud
-
-# Sitemaps
+# Sitemap
 Sitemap: https://poshta.cloud/sitemap.xml
-Sitemap: https://poshta.cloud/pages-sitemap.xml
-Sitemap: https://poshta.cloud/posts-sitemap.xml
+
+# Prevent crawling of API routes
+Disallow: /api/
+
+# Prevent crawling of Next.js internals
+Disallow: /_next/
+
+# Prevent crawling of admin/auth routes (if any)
+Disallow: /admin/

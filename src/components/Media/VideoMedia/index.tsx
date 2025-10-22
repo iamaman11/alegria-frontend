@@ -8,18 +8,23 @@ import type { Props as MediaProps } from '../types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const { onClick, resource, videoClassName } = props
+  const { onClick, resource, videoClassName, alt } = props
 
   const videoRef = useRef<HTMLVideoElement>(null)
-  // const [showFallback] = useState<boolean>()
 
   useEffect(() => {
-    const { current: video } = videoRef
-    if (video) {
-      video.addEventListener('suspend', () => {
-        // setShowFallback(true);
-        // console.warn('Video was suspended, rendering fallback image.')
-      })
+    const video = videoRef.current
+    if (!video) return
+
+    const handleSuspend = () => {
+      // Video playback suspended - could show fallback image here
+      console.warn('Video playback suspended')
+    }
+
+    video.addEventListener('suspend', handleSuspend)
+
+    return () => {
+      video.removeEventListener('suspend', handleSuspend)
     }
   }, [])
 
@@ -30,12 +35,14 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
       <video
         autoPlay
         className={cn(videoClassName)}
-        controls={false}
+        controls={true}
         loop
         muted
         onClick={onClick}
         playsInline
         ref={videoRef}
+        aria-label={alt || 'Video content'}
+        title={alt}
       >
         <source src={getMediaUrl(`/media/${filename}`)} />
       </video>

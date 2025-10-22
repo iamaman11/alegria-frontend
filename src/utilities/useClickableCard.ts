@@ -49,8 +49,7 @@ function useClickableCard<T extends HTMLElement>({
         }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [router, card, link, timeDown],
+    [], // No dependencies needed - refs are stable, values accessed via .current
   )
 
   const handleMouseUp = useCallback(
@@ -71,8 +70,7 @@ function useClickableCard<T extends HTMLElement>({
         }
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [router, card, link, timeDown],
+    [external, newTab, scroll, router], // Dependencies: external props and router
   )
 
   useEffect(() => {
@@ -92,8 +90,7 @@ function useClickableCard<T extends HTMLElement>({
     return () => {
       abortController.abort()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [card, link, router])
+  }, [handleMouseDown, handleMouseUp]) // Dependencies: callbacks (which have correct deps)
 
   return {
     card: {
