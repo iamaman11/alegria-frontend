@@ -74,15 +74,6 @@ export default async function Page({ params: paramsPromise }: Args) {
       {page.hero && <RenderHero {...page.hero} />}
 
       <div className="pt-16 pb-24">
-        {page.title && page.hero && (
-          <header className="mb-8 container">
-            <h1 className="text-4xl font-bold">{page.title}</h1>
-            {(page as any).description && (
-              <p className="mt-4 text-lg text-muted-foreground">{(page as any).description}</p>
-            )}
-          </header>
-        )}
-
         {(page as any).layout && (page as any).layout.length > 0 ? (
           <RenderBlocks blocks={(page as any).layout} />
         ) : (
