@@ -11,12 +11,10 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { generatePostJSONLD } from '@/utilities/generateJSONLD'
 import PageClient from './page.client'
 
-// ISR: 10 minutes revalidation for posts (per deployment guide)
-export const revalidate = 600
-
-// Allow dynamic params for posts not in generateStaticParams
-// Without force-static: Server-renders on demand, then caches for revalidate period
-export const dynamicParams = true
+// Static generation with on-demand revalidation via webhook
+// Posts are fully static (not ISR) and cached in R2
+// Updates from CMS trigger webhook invalidation to Workers API
+export const dynamicParams = true // Allow runtime generation for new posts
 
 export async function generateStaticParams() {
   try {
