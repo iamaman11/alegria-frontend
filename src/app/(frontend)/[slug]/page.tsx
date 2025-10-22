@@ -74,7 +74,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       {page.hero && <RenderHero {...page.hero} />}
 
       <div className="pt-16 pb-24">
-        {page.title && (
+        {page.title && page.hero && (
           <header className="mb-8 container">
             <h1 className="text-4xl font-bold">{page.title}</h1>
             {(page as any).description && (
