@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
@@ -112,14 +111,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   }
 }
 
-const queryPageBySlug = unstable_cache(
-  async ({ slug, draft }: { slug: string; draft: boolean }) => {
-    const page = await getPageBySlug(slug, draft)
-    return page
-  },
-  ['page-by-slug'],
-  {
-    revalidate: 604800, // 7 days
-    tags: ['pages'],
-  }
-)
+const queryPageBySlug = cache(async ({ slug, draft }: { slug: string; draft: boolean }) => {
+  const page = await getPageBySlug(slug, draft)
+  return page
+})
