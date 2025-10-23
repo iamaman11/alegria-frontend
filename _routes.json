@@ -1,6 +1,0 @@
-{
-  "version": 1,
-  "description": "Cloudflare Pages Functions routing - cache-purge handled by Pages Function, not Next.js",
-  "include": ["/*"],
-  "exclude": ["/api/cache-purge"]
-}

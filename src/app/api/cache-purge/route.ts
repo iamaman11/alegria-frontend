@@ -1,19 +1,23 @@
 /**
  * Next.js API Route: Cache Purge Handler
  *
- * This route handles cache invalidation for development and as a fallback
- * Note: On Cloudflare Pages, /functions/api/cache-purge.ts is used instead
- *       which has direct R2 and D1 binding access.
+ * This route handles cache invalidation for:
+ * - Local development (can skip R2/D1 operations)
+ * - Production on Cloudflare Pages (has R2/D1 bindings via getCloudflareContext)
+ *
+ * On Cloudflare Pages:
+ * - Uses getCloudflareContext() to access R2 and D1 bindings
+ * - Deletes cache from R2 incremental cache bucket
+ * - Clears D1 tag cache for on-demand revalidation
+ * - Purges Cloudflare CDN cache
  *
  * On local dev:
- * - Can mock R2/D1 operations or skip them
+ * - getCloudflareContext() is mocked by @opennextjs/cloudflare
  * - Still handles CDN purge via Cloudflare API
- *
- * Bindings available on Cloudflare Pages via context.env
- * But NOT available here (Node.js runtime doesn't have them)
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { getCloudflareContext } from '@opennextjs/cloudflare'
 
 interface PurgeRequest {
   key: string
@@ -70,11 +74,62 @@ export async function POST(request: NextRequest) {
     }
 
     // ============================================
-    // NOTE: R2 and D1 operations skipped on Node.js
-    // They only work on Cloudflare Pages Functions
+    // STEP: Get Cloudflare context (R2/D1 bindings)
     // ============================================
-    console.log('[cache-purge] Running on Node.js (development mode)')
-    results.errors.push('R2/D1 operations only available on Cloudflare Pages')
+    let cfContext: any = null
+    try {
+      cfContext = await getCloudflareContext({ async: true })
+      console.log('[cache-purge] Cloudflare context obtained for R2/D1 access')
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error)
+      console.warn('[cache-purge] getCloudflareContext failed (expected on non-Cloudflare):', msg)
+    }
+
+    // ============================================
+    // STEP: Delete from R2 Incremental Cache
+    // ============================================
+    if (cfContext?.env?.NEXT_INC_CACHE_R2_BUCKET) {
+      try {
+        const r2 = cfContext.env.NEXT_INC_CACHE_R2_BUCKET
+        const prefix = process.env.NEXT_INC_CACHE_R2_PREFIX || 'nextjs-cache'
+        const r2Key = `${prefix}/${key}`
+
+        await r2.delete(r2Key)
+        results.r2_deleted = true
+        console.log('[cache-purge] R2 cache deleted:', r2Key)
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error)
+        console.error('[cache-purge] R2 deletion failed:', msg)
+        results.errors.push(`R2 deletion error: ${msg}`)
+      }
+    } else {
+      console.log('[cache-purge] R2 binding not available (expected on local dev)')
+    }
+
+    // ============================================
+    // STEP: Clear D1 Tag Cache
+    // ============================================
+    if (cfContext?.env?.NEXT_TAG_CACHE_D1) {
+      try {
+        const d1 = cfContext.env.NEXT_TAG_CACHE_D1
+        const tagList = tags.length > 0 ? tags : ['all']
+
+        // Clear D1 entries for these tags
+        for (const tag of tagList) {
+          const sql = 'DELETE FROM tags WHERE tag = ?'
+          await d1.prepare(sql).bind(tag).run()
+        }
+
+        results.d1_cleared = true
+        console.log('[cache-purge] D1 tags cleared:', tagList)
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error)
+        console.error('[cache-purge] D1 clearing failed:', msg)
+        results.errors.push(`D1 clear error: ${msg}`)
+      }
+    } else {
+      console.log('[cache-purge] D1 binding not available (expected on local dev)')
+    }
 
     // ============================================
     // STEP: Purge Cloudflare CDN Cache

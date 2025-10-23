@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
-    "build:worker": "cross-env NODE_OPTIONS=--no-deprecation next build && npx @opennextjs/cloudflare build && npx cpx \"functions/**\" .open-next/functions/ && npx cpx \"_routes.json\" .open-next/",
+    "build:worker": "cross-env NODE_OPTIONS=--no-deprecation next build && npx @opennextjs/cloudflare build && npx cpx \"functions/**\" .open-next/functions/",
     "preview": "npm run build:worker && npx wrangler pages dev .open-next",
     "deploy": "npm run build:worker && npx wrangler pages deploy .open-next --project-name=alegria-frontend --commit-dirty=true",
     "deploy:pages": "npm run build:worker && npx wrangler pages deploy .open-next --project-name=alegria-frontend --commit-dirty=true",
