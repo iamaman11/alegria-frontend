@@ -242,8 +242,3 @@ export async function onRequest(context: EventContext): Promise<Response> {
     )
   }
 }
-
-// Configuration for Cloudflare Pages Function
-export const config = {
-  path: '/api/cache-purge'
-}
