@@ -31,10 +31,17 @@ export async function onRequest(context: EventContext): Promise<Response> {
     return next()
   }
 
-  // 2. API routes - pass to Workers API (no interference)
+  // 2. API routes - specific handling
   if (path.startsWith('/api/')) {
-    // Let Next.js API routes handle this
-    return next()
+    // Cache purge function is handled by Pages Function
+    // All other API routes go to Next.js
+    if (path === '/api/cache-purge') {
+      // Fallthrough to cache-purge.ts Pages Function below
+      // Don't call next() here - let the cache-purge function handle it
+    } else {
+      // Other API routes pass to Next.js
+      return next()
+    }
   }
 
   // 3. Sitemap routes - pass through
