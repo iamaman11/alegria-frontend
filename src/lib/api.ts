@@ -117,7 +117,14 @@ export async function getAllPosts(
 ): Promise<PaginatedResponse<Post>> {
   return fetchAPI<PaginatedResponse<Post>>(
     `/api/posts?page=${page}&limit=${limit}&depth=1`,
-    options
+    {
+      ...options,
+      next: {
+        tags: ['posts-listing', 'collection-posts', `posts-page-${page}`],
+        revalidate: 1800, // 30 minutes
+        ...options?.next,
+      },
+    }
   );
 }
 
@@ -130,7 +137,14 @@ export async function getPostBySlug(
     const draftParam = draft ? '&draft=true' : '';
     return await fetchAPI<Post>(
       `/api/posts/${slug}?depth=2${draftParam}`,
-      options
+      {
+        ...options,
+        next: {
+          tags: [`post-${slug}`, 'collection-posts'],
+          revalidate: 3600, // 1 hour
+          ...options?.next,
+        },
+      }
     );
   } catch (error) {
     return null;
@@ -145,7 +159,14 @@ export async function getPostsByCategory(
 ): Promise<PaginatedResponse<Post>> {
   return fetchAPI<PaginatedResponse<Post>>(
     `/api/posts?category=${categorySlug}&page=${page}&limit=${limit}&depth=1`,
-    options
+    {
+      ...options,
+      next: {
+        tags: [`category-${categorySlug}`, 'posts-listing', 'collection-posts'],
+        revalidate: 1800, // 30 minutes
+        ...options?.next,
+      },
+    }
   );
 }
 
@@ -191,7 +212,14 @@ export async function getAllPages(
 ): Promise<PaginatedResponse<Page>> {
   return fetchAPI<PaginatedResponse<Page>>(
     `/api/pages?limit=${limit}&depth=1`,
-    options
+    {
+      ...options,
+      next: {
+        tags: ['pages-listing', 'collection-pages'],
+        revalidate: 86400, // 24 hours
+        ...options?.next,
+      },
+    }
   );
 }
 
@@ -212,7 +240,14 @@ export async function getPageBySlug(
     logger.log(`[getPageBySlug] Environment: ${typeof window === 'undefined' ? 'server' : 'browser'}`);
     logger.log(`[getPageBySlug] API_URL: ${API_URL}`);
 
-    const page = await fetchAPI<Page>(endpoint, options);
+    const page = await fetchAPI<Page>(endpoint, {
+      ...options,
+      next: {
+        tags: [`page-${slug}`, 'collection-pages'],
+        revalidate: 86400, // 24 hours
+        ...options?.next,
+      },
+    });
 
     const duration = Date.now() - startTime;
     logger.log(`[getPageBySlug] SUCCESS in ${duration}ms: "${slug}" -> "${page?.title || 'N/A'}"`);
@@ -289,7 +324,14 @@ export async function getAllCategories(
 ): Promise<PaginatedResponse<Category>> {
   return fetchAPI<PaginatedResponse<Category>>(
     '/api/categories?limit=100',
-    options
+    {
+      ...options,
+      next: {
+        tags: ['categories-listing', 'collection-categories'],
+        revalidate: 86400, // 24 hours
+        ...options?.next,
+      },
+    }
   );
 }
 
@@ -298,7 +340,14 @@ export async function getCategoryBySlug(
   options?: RequestInit
 ): Promise<Category | null> {
   try {
-    return await fetchAPI<Category>(`/api/categories/${slug}`, options);
+    return await fetchAPI<Category>(`/api/categories/${slug}`, {
+      ...options,
+      next: {
+        tags: [`category-${slug}`, 'collection-categories'],
+        revalidate: 86400, // 24 hours
+        ...options?.next,
+      },
+    });
   } catch (error) {
     return null;
   }
@@ -314,7 +363,14 @@ export async function getAllRedirects(
   try {
     const response = await fetchAPI<PaginatedResponse<Redirect>>(
       '/api/redirects?limit=0',
-      options
+      {
+        ...options,
+        next: {
+          tags: ['redirects-listing', 'collection-redirects'],
+          revalidate: 3600, // 1 hour
+          ...options?.next,
+        },
+      }
     );
     return response.docs;
   } catch (error) {
@@ -332,7 +388,14 @@ export async function getMediaById(
   options?: RequestInit
 ): Promise<Media | null> {
   try {
-    return await fetchAPI<Media>(`/api/media/${id}`, options);
+    return await fetchAPI<Media>(`/api/media/${id}`, {
+      ...options,
+      next: {
+        tags: [`media-${id}`, 'collection-media'],
+        revalidate: 86400, // 24 hours - media rarely changes
+        ...options?.next,
+      },
+    });
   } catch (error) {
     return null;
   }
@@ -392,11 +455,25 @@ export interface FooterGlobal {
 }
 
 export async function getHeader(options?: RequestInit): Promise<HeaderGlobal> {
-  return fetchAPI<HeaderGlobal>('/api/globals/header?depth=1', options);
+  return fetchAPI<HeaderGlobal>('/api/globals/header?depth=1', {
+    ...options,
+    next: {
+      tags: ['global-header'],
+      revalidate: 3600, // 1 hour
+      ...options?.next,
+    },
+  });
 }
 
 export async function getFooter(options?: RequestInit): Promise<FooterGlobal> {
-  return fetchAPI<FooterGlobal>('/api/globals/footer?depth=1', options);
+  return fetchAPI<FooterGlobal>('/api/globals/footer?depth=1', {
+    ...options,
+    next: {
+      tags: ['global-footer'],
+      revalidate: 3600, // 1 hour
+      ...options?.next,
+    },
+  });
 }
 
 // ============================================
