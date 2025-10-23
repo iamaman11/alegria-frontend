@@ -31,11 +31,15 @@ export async function onRequest(context: EventContext): Promise<Response> {
     return next()
   }
 
-  // 2. API routes - pass to Next.js
-  // Note: /api/cache-purge is handled by Pages Function at functions/api/cache-purge.ts
-  // Cloudflare Pages routing will prioritize that specific function over this catch-all
+  // 2. API routes - specific handling
+  // /api/cache-purge is served by dedicated Pages Function cache-purge.ts with R2/D1 access
+  // By NOT calling next() for this path, Cloudflare will try other Pages Functions
   if (path.startsWith('/api/')) {
-    return next()
+    if (path !== '/api/cache-purge') {
+      // Other API routes go to Next.js
+      return next()
+    }
+    // For /api/cache-purge: don't process here, let it fall through to cache-purge.ts function
   }
 
   // 3. Sitemap routes - pass through
