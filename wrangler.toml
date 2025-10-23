@@ -6,6 +6,16 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ============================================
+# CLOUDFLARE PAGES FUNCTIONS ROUTING
+# ============================================
+# Explicit routing to ensure Pages Functions execute BEFORE OpenNext Worker
+# This allows /api/* routes to be handled by dedicated Pages Functions
+# that have access to R2/D1 bindings
+[[routes]]
+pattern = "/api/*"
+zone_name = "poshta.cloud"
+
+# ============================================
 # R2 BINDINGS: Next.js Incremental Cache
 # ============================================
 # Используем существующий bucket 'alegria-media' с префиксом
