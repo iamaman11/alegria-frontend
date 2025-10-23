@@ -47,3 +47,19 @@ NEXT_PRIVATE_DEBUG_CACHE = "1"
 
 # R2 bucket prefix для разделения cache от media
 NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
+
+# ============================================
+# WEBHOOK & SECURITY
+# ============================================
+# Webhook secret for cache purge endpoint (/api/cache/purge)
+# Must match the secret in Workers wrangler.toml
+WEBHOOK_SECRET = "zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w"
+
+# Cloudflare API credentials for CDN cache purging
+# CLOUDFLARE_API_TOKEN should be set via environment variables, not in this file
+# To set on Cloudflare Pages:
+#   1. Go to https://dash.cloudflare.com/profile/api-tokens
+#   2. Create or copy existing API token with cache purge permission
+#   3. Set in GitHub secrets: CLOUDFLARE_API_TOKEN
+#   4. Configure Pages to expose via environment variable
+CLOUDFLARE_ZONE_ID = "1853e9c16cb887cc9f037931443b4b36"
