@@ -19,7 +19,15 @@ export async function onRequest(context: EventContext): Promise<Response> {
   const url = new URL(request.url)
   const path = url.pathname
 
-  // 1. Static assets - serve from CDN, don't rewrite
+  // 1. API routes - handled by dedicated Pages Functions, skip middleware
+  // /api/cache-purge → functions/api/cache-purge.ts (Pages Function with R2/D1 bindings)
+  // /api/* → Other API Pages Functions or Next.js API routes
+  // This must be first to ensure Pages Functions can handle their specific routes
+  if (path.startsWith('/api/')) {
+    return next()
+  }
+
+  // 2. Static assets - serve from CDN, don't rewrite
   // Next.js build output, static files, images, fonts
   if (
     path.startsWith('/_next/') ||
@@ -29,17 +37,6 @@ export async function onRequest(context: EventContext): Promise<Response> {
   ) {
     // Pass through to CDN - fastest path
     return next()
-  }
-
-  // 2. API routes - specific handling
-  // /api/cache-purge is served by dedicated Pages Function api/cache-purge.ts with R2/D1 access
-  // Don't process /api/cache-purge here - let other Pages Functions handle it via file-based routing
-  if (path.startsWith('/api/')) {
-    if (path !== '/api/cache-purge') {
-      // Other API routes go to Next.js
-      return next()
-    }
-    // For /api/cache-purge: return nothing - Cloudflare will route to pages function api/cache-purge.ts
   }
 
   // 3. Sitemap routes - pass through
