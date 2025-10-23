@@ -4,6 +4,16 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
 
+  // DEBUG: Expose environment variables for diagnosis
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'UNDEFINED'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'UNDEFINED'
+  response.headers.set('X-Debug-API-URL', apiUrl)
+  response.headers.set('X-Debug-Site-URL', siteUrl)
+  response.headers.set('X-Debug-Node-Env', process.env.NODE_ENV || 'unknown')
+  response.headers.set('X-Debug-Runtime', 'cloudflare-pages-middleware')
+  response.headers.set('X-Debug-Path', request.nextUrl.pathname)
+  console.log(`[Middleware] API_URL=${apiUrl}, SITE_URL=${siteUrl}, NODE_ENV=${process.env.NODE_ENV}, Path=${request.nextUrl.pathname}`)
+
   // Get pathname
   const pathname = request.nextUrl.pathname
 

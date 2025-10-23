@@ -11,8 +11,8 @@ import { generateMeta } from '@/utilities/generateMeta'
 import { generatePostJSONLD } from '@/utilities/generateJSONLD'
 import PageClient from './page.client'
 
-// ISR: 1 hour revalidation for posts - optimized for better HIT ratio, webhook invalidates on-demand
-export const revalidate = 3600
+// ISR: 10 minutes revalidation for posts (per deployment guide)
+export const revalidate = 600
 
 // Allow dynamic params for posts not in generateStaticParams
 // Without force-static: Server-renders on demand, then caches for revalidate period

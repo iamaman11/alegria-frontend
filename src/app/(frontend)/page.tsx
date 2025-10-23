@@ -10,7 +10,6 @@ import React, { cache } from 'react'
 // Static generation with on-demand revalidation via webhook
 // Homepage is fully static (not ISR) and cached in R2
 // Updates from CMS trigger webhook invalidation to Workers API
-export const revalidate = false
 export const dynamicParams = true
 
 export async function generateMetadata(): Promise<Metadata> {
