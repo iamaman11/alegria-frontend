@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { tags = [], cloudflare_api_token, cloudflare_zone_id } = body
+    const { tags = [] } = body
 
     if (!Array.isArray(tags) || tags.length === 0) {
       return NextResponse.json(
@@ -41,10 +41,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Read from environment variables (set by GitHub Secrets + CI/CD)
+    const cloudflare_api_token = process.env.CLOUDFLARE_API_TOKEN
+    const cloudflare_zone_id = process.env.CLOUDFLARE_ZONE_ID
+
     if (!cloudflare_api_token || !cloudflare_zone_id) {
+      console.error('[cache-purge/atomic] Missing Cloudflare credentials in environment')
       return NextResponse.json(
-        { error: 'cloudflare_api_token and cloudflare_zone_id required' },
-        { status: 400 }
+        { error: 'Cloudflare credentials not configured' },
+        { status: 500 }
       )
     }
 

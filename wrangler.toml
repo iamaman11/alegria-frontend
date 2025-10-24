@@ -49,17 +49,20 @@ NEXT_PRIVATE_DEBUG_CACHE = "1"
 NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
 
 # ============================================
-# WEBHOOK & SECURITY
+# SECRETS & SECURITY (set via GitHub Secrets + CI/CD)
 # ============================================
-# Webhook secret for cache purge endpoint (/api/cache/purge)
-# Must match the secret in Workers wrangler.toml
-WEBHOOK_SECRET = "zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w"
+# DO NOT store secrets in wrangler.toml - use GitHub Secrets instead
+#
+# Required GitHub Secrets:
+# - WEBHOOK_SECRET: zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w
+#   (Must match Workers wrangler.toml WEBHOOK_SECRET)
+# - CLOUDFLARE_API_TOKEN: yOUPX80kVJ3kG4ZmULsQoEjIJwJcDX7aSF70elVm
+#   (Token with 'Zone.Cache Purge' permission)
+#
+# These are loaded by GitHub Actions and exposed to Cloudflare Pages
+# as environment variables for runtime access via process.env
 
-# Cloudflare API credentials for atomic CDN cache purging
-# Set via GitHub secrets or environment variables
-# CLOUDFLARE_API_TOKEN: API token with 'Zone.Cache Purge' permission (set in CI/CD)
-# CLOUDFLARE_ZONE_ID: Zone ID where DNS records are managed
+# ============================================
+# CLOUDFLARE ZONE CONFIGURATION
+# ============================================
 CLOUDFLARE_ZONE_ID = "1853e9c16cb887cc9f037931443b4b36"
-
-# Note: CLOUDFLARE_API_TOKEN is passed from Workers webhook request,
-# not stored in wrangler.toml (security best practice)
