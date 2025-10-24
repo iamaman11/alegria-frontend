@@ -3,10 +3,17 @@
  * Register a cache key for a tag for tag-based invalidation
  *
  * Body: { tag: string, cache_key: string }
+ *
+ * CRITICAL: Must execute fresh every time
+ * - Called during ISR regeneration to register new cache entries
+ * - No caching - this is a stateful operation
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCloudflareContext } from '@opennextjs/cloudflare'
+
+// Disable caching - always execute fresh
+export const revalidate = 0
 
 export async function POST(request: NextRequest) {
   try {

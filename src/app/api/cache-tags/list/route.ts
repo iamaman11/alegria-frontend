@@ -1,11 +1,11 @@
 /**
- * GET /api/cache-tags/by-tag?tag=homepage
- * Get all cache keys for a specific tag
+ * GET /api/cache-tags/list
+ * Get all registered cache tags and their statistics
  *
  * CRITICAL: Must return fresh data (no caching)
- * - Used after atomic purge to verify cleanup
- * - Used by Workers to find which cache keys to purge
- * - Stale data would break cache invalidation
+ * - Used by monitoring/debugging tools
+ * - Used by Workers to understand current cache state
+ * - Stale data would be misleading for diagnostics
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -26,33 +26,37 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const searchParams = request.nextUrl.searchParams
-    const tag = searchParams.get('tag')
-
-    if (!tag) {
-      return NextResponse.json(
-        { error: 'tag query parameter is required' },
-        { status: 400 }
-      )
-    }
-
+    // Get all unique tags and their cache key counts
     const result = await db
-      .prepare('SELECT DISTINCT cache_key FROM cache_tags WHERE tag = ?')
-      .bind(tag)
+      .prepare(
+        `SELECT
+          tag,
+          COUNT(DISTINCT cache_key) as key_count,
+          MAX(created_at) as last_updated
+         FROM cache_tags
+         GROUP BY tag
+         ORDER BY last_updated DESC`
+      )
       .all()
 
-    const cache_keys = result.results?.map((row) => row.cache_key as string) || []
+    const tags: Record<string, number> = {}
+    let totalCount = 0
+
+    result.results?.forEach((row: any) => {
+      tags[row.tag] = row.key_count
+      totalCount += row.key_count
+    })
 
     return NextResponse.json({
       status: 'ok',
-      tag,
-      cache_keys,
-      count: cache_keys.length,
+      tags,
+      totalCount,
+      uniqueTagCount: Object.keys(tags).length,
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('[cache-tags/by-tag] Error:', message)
+    console.error('[cache-tags/list] Error:', message)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
