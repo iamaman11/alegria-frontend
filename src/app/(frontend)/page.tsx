@@ -7,14 +7,13 @@ import { getPageBySlug } from '@/lib/api'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
-// Static generation with on-demand revalidation via webhook
-// Homepage is fully static (not ISR) and cached in R2
-// Updates from CMS trigger webhook invalidation to Workers API
+// Homepage caching strategy
+// revalidate=0: Disable ISR background regeneration (pages never become "stale")
+// This ensures s-maxage=3600 from _headers is ALWAYS applied, never s-maxage=2
+// Webhook system handles cache invalidation when needed (instant purge)
+// Works with OR without webhook - CDN caches 1 hour, webhook clears on demand
 export const dynamicParams = true
-
-// ISR: Revalidate every 5 minutes to keep cache fresh
-// This fixes the s-maxage conflict between Cache-Control (2s) and cdn-cache-control (3600s)
-export const revalidate = 300
+export const revalidate = 0
 
 export async function generateMetadata(): Promise<Metadata> {
   try {

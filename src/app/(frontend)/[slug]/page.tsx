@@ -9,7 +9,11 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
 // ISR configuration for dynamic pages
-export const revalidate = 300 // 5 minutes - will be invalidated by webhook
+// revalidate=0: Disable ISR background regeneration (pages never become "stale")
+// This ensures s-maxage=3600 from _headers is ALWAYS applied, never s-maxage=2
+// Webhook system handles cache invalidation when needed (instant purge)
+// Works with OR without webhook - CDN caches 1 hour, webhook clears on demand
+export const revalidate = 0
 export const dynamicParams = true
 
 export async function generateStaticParams() {
