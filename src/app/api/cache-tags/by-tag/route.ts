@@ -43,13 +43,20 @@ export async function GET(request: NextRequest) {
 
     const cache_keys = result.results?.map((row) => row.cache_key as string) || []
 
-    return NextResponse.json({
-      status: 'ok',
-      tag,
-      cache_keys,
-      count: cache_keys.length,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        status: 'ok',
+        tag,
+        cache_keys,
+        count: cache_keys.length,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
+        },
+      }
+    )
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[cache-tags/by-tag] Error:', message)

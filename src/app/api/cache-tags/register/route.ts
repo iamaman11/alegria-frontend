@@ -56,12 +56,19 @@ export async function POST(request: NextRequest) {
 
     console.log(`[cache-tags/register] Registered tag="${tag}" cache_key="${cache_key}"`)
 
-    return NextResponse.json({
-      status: 'ok',
-      tag,
-      cache_key,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        status: 'ok',
+        tag,
+        cache_key,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
+        },
+      }
+    )
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[cache-tags/register] Error:', message)

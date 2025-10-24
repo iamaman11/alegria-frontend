@@ -47,13 +47,20 @@ export async function GET(request: NextRequest) {
       totalCount += row.key_count
     })
 
-    return NextResponse.json({
-      status: 'ok',
-      tags,
-      totalCount,
-      uniqueTagCount: Object.keys(tags).length,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        status: 'ok',
+        tags,
+        totalCount,
+        uniqueTagCount: Object.keys(tags).length,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
+        },
+      }
+    )
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[cache-tags/list] Error:', message)

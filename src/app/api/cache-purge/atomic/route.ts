@@ -155,16 +155,23 @@ export async function POST(request: NextRequest) {
       `[cache-purge/atomic] SUCCESS - R2: ${r2_deleted}, D1: ${d1_deleted}, CF: ${cloudflare_purged}, duration: ${duration}ms`
     )
 
-    return NextResponse.json({
-      status: 'ok',
-      tags,
-      cache_keys_found: cache_keys.length,
-      deleted_r2: r2_deleted,
-      deleted_d1: d1_deleted,
-      cloudflare_purged,
-      duration,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json(
+      {
+        status: 'ok',
+        tags,
+        cache_keys_found: cache_keys.length,
+        deleted_r2: r2_deleted,
+        deleted_d1: d1_deleted,
+        cloudflare_purged,
+        duration,
+        timestamp: new Date().toISOString(),
+      },
+      {
+        headers: {
+          'Cache-Control': 'private, no-store, no-cache, must-revalidate, max-age=0',
+        },
+      }
+    )
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[cache-purge/atomic] Error:', message)
