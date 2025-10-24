@@ -72,12 +72,12 @@ jobs:
           }
           EOF
 
-      - name: Deploy to Cloudflare Pages (production environment)
+      - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .open-next --project-name=alegria-frontend --compatibility-date=2025-01-01
+          command: pages deploy .open-next --project-name=alegria-frontend
 
       - name: Purge Cloudflare Cache
         if: success()

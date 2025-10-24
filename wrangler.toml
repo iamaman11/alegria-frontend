@@ -66,10 +66,3 @@ NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
 # CLOUDFLARE ZONE CONFIGURATION
 # ============================================
 CLOUDFLARE_ZONE_ID = "1853e9c16cb887cc9f037931443b4b36"
-
-# ============================================
-# PRODUCTION ENVIRONMENT VARIABLES
-# ============================================
-[env.production.vars]
-CLOUDFLARE_API_TOKEN = "yOUPX80kVJ3kG4ZmULsQoEjIJwJcDX7aSF70elVm"
-WEBHOOK_SECRET = "zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w"
