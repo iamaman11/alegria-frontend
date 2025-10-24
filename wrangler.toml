@@ -49,20 +49,16 @@ NEXT_PRIVATE_DEBUG_CACHE = "1"
 NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
 
 # ============================================
-# SECRETS & SECURITY (set via GitHub Secrets + CI/CD)
-# ============================================
-# DO NOT store secrets in wrangler.toml - use GitHub Secrets instead
-#
-# Required GitHub Secrets:
-# - WEBHOOK_SECRET: zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w
-#   (Must match Workers wrangler.toml WEBHOOK_SECRET)
-# - CLOUDFLARE_API_TOKEN: yOUPX80kVJ3kG4ZmULsQoEjIJwJcDX7aSF70elVm
-#   (Token with 'Zone.Cache Purge' permission)
-#
-# These are loaded by GitHub Actions and exposed to Cloudflare Pages
-# as environment variables for runtime access via process.env
-
-# ============================================
 # CLOUDFLARE ZONE CONFIGURATION
 # ============================================
 CLOUDFLARE_ZONE_ID = "1853e9c16cb887cc9f037931443b4b36"
+
+# ============================================
+# ATOMIC CACHE PURGE CREDENTIALS
+# ============================================
+# Used by Pages /api/cache-purge/atomic endpoint
+# Token with 'Zone.Cache Purge' permission for CDN cleanup
+CLOUDFLARE_API_TOKEN = "yOUPX80kVJ3kG4ZmULsQoEjIJwJcDX7aSF70elVm"
+
+# Webhook validation secret (must match Workers config)
+WEBHOOK_SECRET = "zLcKtwlMEJOHZmVXKJjNZk2GXZ2vrsM-TnoRRFkyF2w"
