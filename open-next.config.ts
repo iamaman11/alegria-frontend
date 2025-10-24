@@ -46,4 +46,20 @@ export default defineCloudflareConfig({
   // Хранит информацию о cache tags для on-demand revalidation
   // (revalidateTag, revalidatePath из Next.js)
   tagCache: d1NextTagCache,
+
+  // =====================================
+  // CLOUDFLARE CDN CACHE RULES
+  // =====================================
+  // Переопределяет s-maxage для всех маршрутов
+  // Решает проблему s-maxage=2 для динамических страниц
+  // 25 октября 2025: Добавлено для кэширования динамических страниц на 1 час
+  cacheControl: {
+    // Применяется ко ВСЕМ страницам (текущим и будущим)
+    default: {
+      // s-maxage: CDN кэш (Cloudflare)
+      maxAge: 120, // browser кэш 2 минуты
+      sMaxAge: 3600, // CDN кэш 1 час - переопределяет OpenNext s-maxage=2!
+      staleWhileRevalidate: 86400, // serve stale content в течение 24 часов
+    },
+  },
 });
