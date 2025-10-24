@@ -13,9 +13,29 @@
 /media/*
   Cache-Control: public, max-age=604800
 
-# API routes - no cache
+# Monitoring APIs - allow CDN caching for 1 hour
+/api/health
+  Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+
+/api/stats
+  Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+
+/api/d1/stats
+  Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+
+/api/r2/stats
+  Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+
+# Management APIs - never cache (cache invalidation endpoints)
+/api/cache-purge/*
+  Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0
+
+/api/cache-tags/*
+  Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0
+
+# Other API routes - conservative, no cache
 /api/*
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0
 
 # Favicon - cache for 1 day
 /favicon.ico
