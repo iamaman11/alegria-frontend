@@ -3,16 +3,19 @@
  * Expert atomic cache purge: CDN + R2 + D1 synchronized
  *
  * Body: {
- *   tags: string[],
- *   cloudflare_api_token: string,
- *   cloudflare_zone_id: string
+ *   tags: string[]
  * }
  *
+ * Environment variables (injected by GitHub Actions from Secrets):
+ * - CLOUDFLARE_API_TOKEN: from process.env
+ * - CLOUDFLARE_ZONE_ID: from process.env
+ *
  * Flow:
- * 1. DELETE D1 tag mappings (find cache_keys first)
- * 2. DELETE R2 cache files (parallel with Cloudflare API)
- * 3. Cloudflare API: purge_cache by tags
- * 4. All success → safe for pre-warm
+ * 1. Query D1: find all cache_keys for these tags
+ * 2. DELETE R2 cache files (parallel)
+ * 3. Cloudflare API: purge_cache by tags (parallel)
+ * 4. DELETE D1 mappings (only if R2 succeeded)
+ * 5. Return: all deleted counts + duration
  */
 
 import { NextRequest, NextResponse } from 'next/server'

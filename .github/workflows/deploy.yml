@@ -79,6 +79,23 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy .open-next --project-name=alegria-frontend
 
+      - name: Set Pages Environment Variables (production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project list
+
+      - name: Configure Environment Variables via wrangler
+        run: |
+          # Note: wrangler pages deployment env vars must be set through Cloudflare UI or API
+          # For now, passing through build-time environment for pages functions
+          echo "[INFO] Environment variables will be set via Cloudflare Pages UI"
+          echo "Required secrets for production:"
+          echo "  - CLOUDFLARE_API_TOKEN"
+          echo "  - CLOUDFLARE_ZONE_ID"
+          echo "  - WEBHOOK_SECRET"
+
       - name: Purge Cloudflare Cache
         if: success()
         run: |

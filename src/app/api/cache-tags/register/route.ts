@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
     const now = new Date().toISOString()
 
     // Insert or update tag-cache_key mapping
-    await db
+    // ON CONFLICT works because PRIMARY KEY (tag, cache_key) is defined in migration
+    const result = await db
       .prepare(
         `INSERT INTO cache_tags (tag, cache_key, created_at)
          VALUES (?, ?, ?)
@@ -41,6 +42,10 @@ export async function POST(request: NextRequest) {
       )
       .bind(tag, cache_key, now, now)
       .run()
+
+    if (!result.success) {
+      throw new Error(`Failed to insert: ${result.error || 'unknown error'}`)
+    }
 
     console.log(`[cache-tags/register] Registered tag="${tag}" cache_key="${cache_key}"`)
 
