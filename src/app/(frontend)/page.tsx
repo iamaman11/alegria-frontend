@@ -12,6 +12,10 @@ import React, { cache } from 'react'
 // Updates from CMS trigger webhook invalidation to Workers API
 export const dynamicParams = true
 
+// ISR: Revalidate every 5 minutes to keep cache fresh
+// This fixes the s-maxage conflict between Cache-Control (2s) and cdn-cache-control (3600s)
+export const revalidate = 300
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const page = await queryPageBySlug({ slug: 'home', draft: false })
