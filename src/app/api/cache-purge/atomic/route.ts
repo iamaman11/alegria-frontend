@@ -44,12 +44,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Read from environment variables (set by GitHub Secrets + CI/CD)
+    // Read from environment variables (set by Pages Variables and Secrets)
     const cloudflare_api_token = process.env.CLOUDFLARE_API_TOKEN
     const cloudflare_zone_id = process.env.CLOUDFLARE_ZONE_ID
 
+    console.log('[cache-purge/atomic] ENV check:')
+    console.log('  CLOUDFLARE_API_TOKEN present:', !!cloudflare_api_token)
+    console.log('  CLOUDFLARE_ZONE_ID:', cloudflare_zone_id)
+    console.log('  All env keys:', Object.keys(process.env).filter(k => k.includes('CLOUDFLARE') || k.includes('WEBHOOK')))
+
     if (!cloudflare_api_token || !cloudflare_zone_id) {
-      console.error('[cache-purge/atomic] Missing Cloudflare credentials in environment')
+      console.error('[cache-purge/atomic] Missing credentials - token:', !!cloudflare_api_token, 'zone:', !!cloudflare_zone_id)
       return NextResponse.json(
         { error: 'Cloudflare credentials not configured' },
         { status: 500 }
