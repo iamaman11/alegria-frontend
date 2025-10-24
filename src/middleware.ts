@@ -37,9 +37,42 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // API routes - no cache
+  // API routes - differentiated caching strategy
   if (pathname.startsWith('/api/')) {
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    // Management APIs: never cache (cache manipulation endpoints)
+    const managementApis = [
+      '/api/cache-purge',
+      '/api/cache-tags',
+    ]
+    const isManagementApi = managementApis.some(api => pathname.startsWith(api))
+
+    if (isManagementApi) {
+      // Never cache cache management endpoints
+      response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
+      return response
+    }
+
+    // Monitoring APIs: allow moderate caching (health checks, stats)
+    // These endpoints provide status information and benefit from 1-hour CDN cache
+    const monitoringApis = [
+      '/api/health',
+      '/api/stats',
+      '/api/d1/stats',
+      '/api/r2/stats',
+    ]
+    const isMonitoringApi = monitoringApis.some(api => pathname.startsWith(api))
+
+    if (isMonitoringApi) {
+      // Allow route handler's explicit Cache-Control to take precedence
+      // Route handler sets: public, s-maxage=3600, stale-while-revalidate=86400
+      if (!response.headers.get('Cache-Control')) {
+        response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+      }
+      return response
+    }
+
+    // Other APIs: default to no cache (conservative)
+    response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
     return response
   }
 
