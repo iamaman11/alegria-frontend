@@ -66,20 +66,11 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // ISR pages - enhanced caching strategy
-  // Default: 5 minutes CDN cache with 24 hours stale-while-revalidate
+  // ISR pages - caching handled by public/_headers (s-maxage=3600)
+  // Middleware sets default for routes not in _headers
   if (!response.headers.get('Cache-Control')) {
     response.headers.set(
       'Cache-Control',
-      'public, s-maxage=300, stale-while-revalidate=86400, stale-if-error=604800'
-    )
-  }
-
-  // Add CDN-Cache-Control header for Cloudflare
-  // This allows longer CDN caching while keeping ISR at 60 seconds
-  if (!pathname.startsWith('/api/')) {
-    response.headers.set(
-      'CDN-Cache-Control',
       'public, s-maxage=3600, stale-while-revalidate=86400'
     )
   }
