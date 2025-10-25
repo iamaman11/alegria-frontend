@@ -7,11 +7,7 @@ export function middleware(request: NextRequest) {
   // Get pathname
   const pathname = request.nextUrl.pathname
 
-  // Dynamic pages are now handled by OpenNext with proper KV bindings
-  // No middleware rewrite needed - routes compile correctly with bindings
-  // Just pass through for standard Next.js routing
-
-  // Static assets - cache for 1 year
+  // Static assets - cache for 1 year (immutable)
   if (
     pathname.startsWith('/_next/static') ||
     pathname.startsWith('/_next/image') ||
@@ -27,58 +23,12 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // API routes - differentiated caching strategy
-  if (pathname.startsWith('/api/')) {
-    // Management APIs: never cache (cache manipulation endpoints)
-    const managementApis = [
-      '/api/cache-purge',
-      '/api/cache-tags',
-    ]
-    const isManagementApi = managementApis.some(api => pathname.startsWith(api))
-
-    if (isManagementApi) {
-      // Never cache cache management endpoints
-      response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
-      return response
-    }
-
-    // Monitoring APIs: allow moderate caching (health checks, stats)
-    // These endpoints provide status information and benefit from 1-hour CDN cache
-    const monitoringApis = [
-      '/api/health',
-      '/api/stats',
-      '/api/d1/stats',
-      '/api/r2/stats',
-    ]
-    const isMonitoringApi = monitoringApis.some(api => pathname.startsWith(api))
-
-    if (isMonitoringApi) {
-      // Allow route handler's explicit Cache-Control to take precedence
-      // Route handler sets: public, s-maxage=3600, stale-while-revalidate=86400
-      if (!response.headers.get('Cache-Control')) {
-        response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
-      }
-      return response
-    }
-
-    // Other APIs: default to no cache (conservative)
-    response.headers.set('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
-    return response
-  }
-
-  // ISR pages - caching handled by public/_headers (s-maxage=3600)
-  // Middleware sets default for routes not in _headers
-  if (!response.headers.get('Cache-Control')) {
-    response.headers.set(
-      'Cache-Control',
-      'public, s-maxage=3600, stale-while-revalidate=86400'
-    )
-  }
-
-  // Add performance hints
+  // Add security headers
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-Frame-Options', 'DENY')
 
+  // All caching for pages and API routes is handled by public/_headers
+  // Middleware only handles security and specific asset types
   return response
 }
 
