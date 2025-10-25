@@ -23,11 +23,11 @@ export default defineCloudflareConfig({
   // =====================================
   // R2 с Regional Cache wrapper для максимальной производительности
 
-  // OPTION 1: Standard configuration (ISR pages show STALE after revalidate period)
+  // OPTION 1: Short-lived Regional Cache (1 minute instead of 30 minutes)
   incrementalCache: withRegionalCache(r2IncrementalCache, {
-    // "long-lived" = 30 минут в памяти региона
-    // "short-lived" = 1 минута (для часто обновляемого контента)
-    mode: "long-lived",
+    // "long-lived" = 30 минут в памяти региона (BLOCKS webhook)
+    // "short-lived" = 1 минута (faster webhook response)
+    mode: "short-lived",
 
     // Пропускать проверку Tag Cache при cache hit (performance optimization)
     // Ускоряет ответ на ~2-5ms при HIT
