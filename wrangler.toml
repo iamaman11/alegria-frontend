@@ -6,12 +6,13 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 # ============================================
-# R2 BINDINGS: Next.js Incremental Cache
+# R2 BINDINGS: Separate buckets per responsibility
 # ============================================
-# Используем существующий bucket 'alegria-media' с префиксом
+# ISR incremental cache: dedicated bucket (nextjs-incremental-cache)
+# CMS media: separate storage (alegria-media - managed externally)
 [[r2_buckets]]
 binding = "NEXT_INC_CACHE_R2_BUCKET"
-bucket_name = "alegria-media"
+bucket_name = "nextjs-incremental-cache"
 
 # ============================================
 # D1 BINDINGS: Tag Cache for On-Demand Revalidation
@@ -45,8 +46,8 @@ API_URL = "https://api.poshta.cloud"
 # Debug режим для кэширования (удалить в production после тестирования)
 NEXT_PRIVATE_DEBUG_CACHE = "1"
 
-# R2 bucket prefix для разделения cache от media
-NEXT_INC_CACHE_R2_PREFIX = "nextjs-cache"
+# R2 bucket prefix - not needed with separate buckets
+# (nextjs-incremental-cache bucket is dedicated to ISR cache)
 
 # ============================================
 # CLOUDFLARE ZONE CONFIGURATION

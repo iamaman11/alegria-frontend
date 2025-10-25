@@ -29,11 +29,11 @@ export default defineCloudflareConfig({
     // "short-lived" = 1 минута (faster webhook response)
     mode: "short-lived",
 
-    // ISR Fix: Check Tag Cache on every HIT to enable webhook invalidation
-    // Slightly slower (+5-10ms) but necessary for proper ISR STALE signaling
-    // When webhook deletes D1 tags, next Regional Cache HIT sees invalidation
-    // This allows webhook to clear cache without Regional Cache bypassing the check
-    bypassTagCacheOnCacheHit: false,
+    // ORIGINAL ISR MECHANISM: Skip D1 tag check on HIT for maximum performance
+    // true = bypass Tag Cache check on Regional Cache HIT (ORIGINAL, CORRECT)
+    // Invalidation handled by Cloudflare Cache Purge API (not D1 manipulation)
+    // D1 tags are auto-populated by OpenNext writeTags() during ISR generation
+    bypassTagCacheOnCacheHit: true,
   }),
 
   // OPTION 2: Custom handler for always HIT (uncomment to enable)
