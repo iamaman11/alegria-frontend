@@ -36,13 +36,35 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud' }}
 
-      - name: Verify Pages build structure
+      - name: Prepare .open-next for Pages deployment
         run: |
-          echo "[INFO] Checking .open-next structure..."
-          ls -la .open-next/ || echo "[ERROR] .open-next directory not found"
-          [ -f .open-next/_routes.json ] && echo "[OK] _routes.json found" || echo "[WARN] _routes.json missing"
-          [ -f .open-next/_worker.js ] && echo "[OK] _worker.js found" || echo "[WARN] _worker.js missing"
-          [ -d .open-next/static ] && echo "[OK] static/ directory found" || echo "[WARN] static/ directory missing"
+          cd .open-next
+          # Copy static assets to root for Cloudflare Pages
+          cp -r assets/* .
+          # Rename worker.js to _worker.js (required for Pages)
+          mv worker.js _worker.js
+          # Create _routes.json for static asset routing
+          cat > _routes.json << 'EOF'
+          {
+            "version": 1,
+            "description": "Static assets should bypass Worker",
+            "include": ["/*"],
+            "exclude": [
+              "/_next/static/*",
+              "/favicon.ico",
+              "/favicon.svg",
+              "/robots.txt",
+              "/sitemap.xml",
+              "/pages-sitemap.xml",
+              "/posts-sitemap.xml",
+              "/file.svg",
+              "/globe.svg",
+              "/next.svg",
+              "/vercel.svg",
+              "/window.svg"
+            ]
+          }
+          EOF
 
       - name: Initialize D1 Tables (first deployment only)
         run: |
