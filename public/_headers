@@ -1,9 +1,9 @@
 # Cloudflare Pages caching configuration
 # https://developers.cloudflare.com/pages/configuration/headers/
 
-# Default caching for HTML pages (ISR + CDN)
-/*
-  Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400
+# IMPORTANT: Do NOT set Cache-Control for HTML pages (/)
+# Let Next.js/OpenNext manage ISR headers automatically
+# This includes dynamic pages with revalidate settings
 
 # Static assets - cache for 1 year (immutable)
 /_next/static/*
