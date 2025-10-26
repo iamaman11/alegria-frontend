@@ -36,41 +36,13 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.poshta.cloud' }}
 
-      - name: Populate R2 Incremental Cache
-        run: npx @opennextjs/cloudflare populateCache remote --config=wrangler.toml
+      - name: Initialize D1 Tables (first deployment only)
+        run: |
+          npx wrangler d1 execute nextjs-tag-cache --remote --command "CREATE TABLE IF NOT EXISTS tags (tag TEXT NOT NULL, path TEXT NOT NULL, UNIQUE(tag, path) ON CONFLICT REPLACE)"
+          npx wrangler d1 execute nextjs-tag-cache --remote --command "CREATE TABLE IF NOT EXISTS revalidations (tag TEXT NOT NULL, revalidatedAt INTEGER NOT NULL, UNIQUE(tag) ON CONFLICT REPLACE)"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Prepare .open-next for Pages deployment
-        run: |
-          cd .open-next
-          # Copy static assets to root for Cloudflare Pages
-          cp -r assets/* .
-          # Rename worker.js to _worker.js (required for Pages)
-          mv worker.js _worker.js
-          # Create _routes.json for static asset routing
-          cat > _routes.json << 'EOF'
-          {
-            "version": 1,
-            "description": "Static assets should bypass Worker",
-            "include": ["/*"],
-            "exclude": [
-              "/_next/static/*",
-              "/favicon.ico",
-              "/favicon.svg",
-              "/robots.txt",
-              "/sitemap.xml",
-              "/pages-sitemap.xml",
-              "/posts-sitemap.xml",
-              "/file.svg",
-              "/globe.svg",
-              "/next.svg",
-              "/vercel.svg",
-              "/window.svg"
-            ]
-          }
-          EOF
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

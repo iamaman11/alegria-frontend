@@ -20,7 +20,7 @@ bucket_name = "nextjs-incremental-cache"
 [[d1_databases]]
 binding = "NEXT_TAG_CACHE_D1"
 database_name = "nextjs-tag-cache"
-database_id = "6c75b795-e0a7-4fe0-8653-6b35082b1e44"
+database_id = "0fc77901-c4ca-4d5b-b390-3cb536fab461"
 
 # ============================================
 # DURABLE OBJECTS: ISR Queue
