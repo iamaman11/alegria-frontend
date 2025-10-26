@@ -9,12 +9,12 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import React, { cache } from 'react'
 
 // ISR configuration for dynamic pages
-// revalidate=300: Keep cache fresh for 300 seconds (5 minutes)
+// revalidate=60: Keep cache fresh for 60 seconds (1 minute) - SHORTENED FOR TESTING
 // This ensures x-nextjs-cache returns HIT (not STALE) and s-maxage matches ISR TTL
-// When pages become stale after 300s, OpenNext recalculates headers properly
-// Result: s-maxage=144 (aligned with ISR), not s-maxage=2
+// When pages become stale after 60s, OpenNext recalculates headers properly
+// This allows faster testing cycle to verify ISR behavior (instead of waiting 5 minutes)
 // Webhook system handles on-demand cache invalidation (atomic purge of all layers)
-export const revalidate = 300
+export const revalidate = 60
 export const dynamicParams = true
 
 export async function generateStaticParams() {
