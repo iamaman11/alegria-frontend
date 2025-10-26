@@ -3,8 +3,6 @@ import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
-
-  // Get pathname
   const pathname = request.nextUrl.pathname
 
   // Static assets - cache for 1 year (immutable)
@@ -17,18 +15,19 @@ export function middleware(request: NextRequest) {
     return response
   }
 
-  // Sitemap files - cache for 1 hour
+  // Sitemaps - cache for 1 hour with SWR
   if (pathname.endsWith('.xml')) {
     response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
     return response
   }
 
-  // Add security headers
+  // Security headers only
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-Frame-Options', 'DENY')
 
-  // All caching for pages and API routes is handled by public/_headers
-  // Middleware only handles security and specific asset types
+  // Dynamic pages (including ISR): Next.js + OpenNext manage caching
+  // revalidate value from route handlers controls Cache-Control headers
+  // Do NOT override headers - let Next.js runtime set them based on revalidate
   return response
 }
 
