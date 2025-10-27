@@ -1,5 +1,4 @@
 import tailwindcssAnimate from 'tailwindcss-animate'
-import typography from '@tailwindcss/typography'
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -10,7 +9,7 @@ const config = {
     './src/**/*.{ts,tsx}',
   ],
   darkMode: ['selector', '[data-theme="dark"]'],
-  plugins: [tailwindcssAnimate, typography],
+  plugins: [tailwindcssAnimate],
   prefix: '',
   safelist: [
     'lg:col-span-4',
