@@ -84,6 +84,19 @@
   }
 }
 
+/* Logo theme-aware styling */
+img[alt="Payload Logo"] {
+  filter: invert(1);
+}
+
+html[data-theme='dark'] img[alt="Payload Logo"] {
+  filter: invert(0);
+}
+
+html[data-theme='light'] img[alt="Payload Logo"] {
+  filter: invert(1);
+}
+
 html {
   opacity: 0;
 }
