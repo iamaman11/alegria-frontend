@@ -1,3 +1,8 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Image optimization settings
@@ -55,10 +60,6 @@ const nextConfig = {
     // Don't fail build on type errors (we'll fix them iteratively)
     ignoreBuildErrors: true,
   },
-  eslint: {
-    // Don't fail build on lint errors
-    ignoreDuringBuilds: true,
-  },
 
   // Optimize bundle size
   compiler: {
@@ -74,20 +75,9 @@ const nextConfig = {
     ],
   },
 
-  // Webpack configuration
-  webpack: (config, { isServer }) => {
-    // Add fallbacks for Node.js modules (needed for some Payload packages)
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      };
-    }
-
-    return config;
+  // Turbopack configuration (for Next.js 16+)
+  turbopack: {
+    root: __dirname,
   },
 };
 
