@@ -37,9 +37,9 @@ export default async function HomePage() {
     <article>
       {page.hero && <RenderHero {...page.hero} />}
 
-      <div className="pt-16 pb-24">
+      <div className="pt-16 pb-24 container">
         {page.title && (
-          <header className="mb-8 container">
+          <header className="mb-8">
             <h1 className="text-4xl font-bold">{page.title}</h1>
             {(page as any).description && (
               <p className="mt-4 text-lg text-muted-foreground">{(page as any).description}</p>

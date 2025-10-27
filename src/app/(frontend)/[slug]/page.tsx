@@ -78,7 +78,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       <article>
       {page.hero && <RenderHero {...page.hero} />}
 
-      <div className="pt-16 pb-24">
+      <div className="pt-16 pb-24 container">
         {(page as any).layout && (page as any).layout.length > 0 ? (
           <RenderBlocks blocks={(page as any).layout} />
         ) : (
