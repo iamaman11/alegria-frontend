@@ -96,19 +96,25 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Upload cache assets to R2 for ISR prewarming
+      - name: Note on ISR Cache Population
         run: |
-          echo "[INFO] Uploading cache files to R2..."
-          count=0
-          for file in $(find .open-next/cache -name "*.cache"); do
-            relative_path="${file#.open-next/cache/}"
-            npx wrangler r2 object put "nextjs-incremental-cache/${relative_path}" --file="${file}" --remote
-            count=$((count+1))
-          done
-          echo "[OK] Uploaded $count cache files to R2"
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          echo "[INFO] ISR Cache Auto-Population Strategy"
+          echo "=========================================="
+          echo ""
+          echo "OpenNext 1.11.0 with Next.js 16:"
+          echo "- R2 cache pre-population is OPTIONAL (not required for production)"
+          echo "- Cache is automatically populated on first request to each page"
+          echo "- Architecture: Cache API (regional) → R2 (persistent) → On-demand generation"
+          echo ""
+          echo "Benefits of this approach:"
+          echo "- No need to pre-upload cache files (avoids path encoding issues)"
+          echo "- Dynamic cache management: only cached pages that are accessed"
+          echo "- Reduces initial deployment time"
+          echo ""
+          echo "References:"
+          echo "- R2IncrementalCache.set() saves to R2 on every generation"
+          echo "- RegionalCache.get() checks Cache API first, then R2"
+          echo "- ISR revalidation managed via D1 tags table"
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
