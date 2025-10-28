@@ -13,7 +13,7 @@ import React, { cache } from 'react'
 // Webhook system handles cache invalidation when needed (instant purge)
 // Works with OR without webhook - CDN caches 1 hour, webhook clears on demand
 export const dynamicParams = true
-export const revalidate = 0
+export const revalidate = 3600
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
