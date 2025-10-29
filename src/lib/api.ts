@@ -77,6 +77,9 @@ async function fetchAPI<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      const responseBody = await response.text();
+      console.error(`[API Error] ${response.status} ${response.statusText} for ${url}`);
+      console.error(`[API Error] Response body: ${responseBody}`);
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
