@@ -97,6 +97,15 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 
   try {
     const page = await queryPageBySlug({ slug, draft: false })
+
+    // If the page is not found, return default metadata to prevent a crash
+    if (!page) {
+      return {
+        title: slug || 'Page Not Found',
+        description: `The page "${slug}" could not be found.`,
+      }
+    }
+
     return generateMeta({ doc: page })
   } catch (error) {
     console.error(`[generateMetadata] Failed to fetch metadata for page "${slug}":`, error)
