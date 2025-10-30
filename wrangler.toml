@@ -24,13 +24,23 @@ database_name = "nextjs-tag-cache"
 database_id = "0fc77901-c4ca-4d5b-b390-3cb536fab461"
 
 # ============================================
-# DURABLE OBJECTS: ISR Queue
+# QUEUES: ISR Background Revalidation
 # ============================================
-# ВРЕМЕННО ОТКЛЮЧЕНО: OpenNext еще не экспортирует DO class корректно в production
-# [[durable_objects.bindings]]
-# name = "NEXT_ISR_QUEUE_DO"
-# class_name = "NextISRQueue"
-# script_name = "alegria-frontend"
+# This is the official OpenNext mechanism for time-based revalidation (ISR)
+# The producer sends revalidation tasks to the queue.
+[[queues.producers]]
+  queue = "isr-queue"
+  binding = "REVALIDATE_QUEUE"
+
+# The consumer is a worker that processes tasks from the queue.
+[consumers]
+  [consumers.isr-queue]
+    queue_name = "isr-queue"
+    max_batch_size = 1
+    max_batch_timeout = 1
+    max_retries = 10
+    dead_letter_queue = "isr-dlq"
+
 
 [vars]
 # Environment identification
