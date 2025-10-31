@@ -81,6 +81,25 @@ jobs:
           }
           EOF
 
+      - name: Strip Queues/Consumers from wrangler.toml for Pages
+        # Workaround: if the account doesn't have Cloudflare Queues enabled,
+        # wrangler will fail when publishing consumers. Remove queues/consumers
+        # from the generated wrangler.toml before calling `wrangler pages deploy`.
+        run: |
+          cd .open-next
+          if [ -f wrangler.toml ]; then
+            awk 'BEGIN{skip=0}
+            /^\[\[queues.producers\]\]/{skip=1;next}
+            /^\[consumers\]/{skip=1;next}
+            /^\[[a-zA-Z0-9_]+\]/{if(skip==1 && $0=="[vars]"){skip=0; print $0; next}} 
+            { if(!skip) print }
+            ' wrangler.toml > wrangler.cleaned.toml || cp wrangler.toml wrangler.cleaned.toml
+            mv wrangler.cleaned.toml wrangler.toml
+            echo "Stripped queues/consumers from .open-next/wrangler.toml"
+          else
+            echo "No wrangler.toml found in .open-next, skipping strip step"
+          fi
+
       - name: Initialize D1 Tables (first deployment only)
         run: |
           npx wrangler d1 execute nextjs-tag-cache --remote --command "CREATE TABLE IF NOT EXISTS tags (tag TEXT NOT NULL, path TEXT NOT NULL, UNIQUE(tag, path) ON CONFLICT REPLACE)"
